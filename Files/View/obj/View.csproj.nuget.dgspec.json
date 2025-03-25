@@ -1,0 +1,308 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Usable\\Repositories\\Lauosz_TPUM\\Files\\View\\View.csproj": {}
+  },
+  "projects": {
+    "C:\\Usable\\Repositories\\Lauosz_TPUM\\Files\\Dane\\Dane.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Usable\\Repositories\\Lauosz_TPUM\\Files\\Dane\\Dane.csproj",
+        "projectName": "Dane",
+        "projectPath": "C:\\Usable\\Repositories\\Lauosz_TPUM\\Files\\Dane\\Dane.csproj",
+        "packagesPath": "C:\\Users\\KazuSady\\.nuget\\packages\\",
+        "outputPath": "C:\\Usable\\Repositories\\Lauosz_TPUM\\Files\\Dane\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\KazuSady\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net6.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net6.0": {
+            "targetAlias": "net6.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net6.0": {
+          "targetAlias": "net6.0",
+          "dependencies": {
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.3, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Usable\\Repositories\\Lauosz_TPUM\\Files\\Logika\\Logika.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Usable\\Repositories\\Lauosz_TPUM\\Files\\Logika\\Logika.csproj",
+        "projectName": "Logika",
+        "projectPath": "C:\\Usable\\Repositories\\Lauosz_TPUM\\Files\\Logika\\Logika.csproj",
+        "packagesPath": "C:\\Users\\KazuSady\\.nuget\\packages\\",
+        "outputPath": "C:\\Usable\\Repositories\\Lauosz_TPUM\\Files\\Logika\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\KazuSady\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net6.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net6.0": {
+            "targetAlias": "net6.0",
+            "projectReferences": {
+              "C:\\Usable\\Repositories\\Lauosz_TPUM\\Files\\Dane\\Dane.csproj": {
+                "projectPath": "C:\\Usable\\Repositories\\Lauosz_TPUM\\Files\\Dane\\Dane.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net6.0": {
+          "targetAlias": "net6.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Usable\\Repositories\\Lauosz_TPUM\\Files\\Model\\Model.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Usable\\Repositories\\Lauosz_TPUM\\Files\\Model\\Model.csproj",
+        "projectName": "Model",
+        "projectPath": "C:\\Usable\\Repositories\\Lauosz_TPUM\\Files\\Model\\Model.csproj",
+        "packagesPath": "C:\\Users\\KazuSady\\.nuget\\packages\\",
+        "outputPath": "C:\\Usable\\Repositories\\Lauosz_TPUM\\Files\\Model\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\KazuSady\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net6.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net6.0": {
+            "targetAlias": "net6.0",
+            "projectReferences": {
+              "C:\\Usable\\Repositories\\Lauosz_TPUM\\Files\\Logika\\Logika.csproj": {
+                "projectPath": "C:\\Usable\\Repositories\\Lauosz_TPUM\\Files\\Logika\\Logika.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net6.0": {
+          "targetAlias": "net6.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Usable\\Repositories\\Lauosz_TPUM\\Files\\ViewModel\\ViewModel.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Usable\\Repositories\\Lauosz_TPUM\\Files\\ViewModel\\ViewModel.csproj",
+        "projectName": "ViewModel",
+        "projectPath": "C:\\Usable\\Repositories\\Lauosz_TPUM\\Files\\ViewModel\\ViewModel.csproj",
+        "packagesPath": "C:\\Users\\KazuSady\\.nuget\\packages\\",
+        "outputPath": "C:\\Usable\\Repositories\\Lauosz_TPUM\\Files\\ViewModel\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\KazuSady\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net6.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net6.0": {
+            "targetAlias": "net6.0",
+            "projectReferences": {
+              "C:\\Usable\\Repositories\\Lauosz_TPUM\\Files\\Model\\Model.csproj": {
+                "projectPath": "C:\\Usable\\Repositories\\Lauosz_TPUM\\Files\\Model\\Model.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net6.0": {
+          "targetAlias": "net6.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Usable\\Repositories\\Lauosz_TPUM\\Files\\View\\View.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Usable\\Repositories\\Lauosz_TPUM\\Files\\View\\View.csproj",
+        "projectName": "View",
+        "projectPath": "C:\\Usable\\Repositories\\Lauosz_TPUM\\Files\\View\\View.csproj",
+        "packagesPath": "C:\\Users\\KazuSady\\.nuget\\packages\\",
+        "outputPath": "C:\\Usable\\Repositories\\Lauosz_TPUM\\Files\\View\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\KazuSady\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net6.0-windows"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net6.0-windows7.0": {
+            "targetAlias": "net6.0-windows",
+            "projectReferences": {
+              "C:\\Usable\\Repositories\\Lauosz_TPUM\\Files\\ViewModel\\ViewModel.csproj": {
+                "projectPath": "C:\\Usable\\Repositories\\Lauosz_TPUM\\Files\\ViewModel\\ViewModel.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net6.0-windows7.0": {
+          "targetAlias": "net6.0-windows",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            },
+            "Microsoft.WindowsDesktop.App.WPF": {
+              "privateAssets": "none"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

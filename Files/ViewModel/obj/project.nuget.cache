@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "k1l0Rz4jIvDwbL8n0rjWFn/RcKDOuNHYQHc5NEQY0BYvhr/MU1uC7r0yFRH0eFy8kqIoSdcjdgJMZ93s8SRjRg==",
+  "success": true,
+  "projectFilePath": "C:\\Usable\\Repositories\\Lauosz_TPUM\\Files\\ViewModel\\ViewModel.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\KazuSady\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}
