@@ -1,26 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics.Metrics;
-using System.Drawing;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Dane
+﻿namespace Dane
 {
     public abstract class AbstractDataAPI
     {
-
-        public abstract void CreateScene(int height, int width);
-        public abstract List<IBall> GetAllBalls();
-        public abstract void CreateBall(int id, int x, int y);
-        public abstract int GetSceneWidth();
-        public abstract int GetSceneHeight();
-        public abstract void TurnOff();
-        public abstract void TurnOn();
-        public abstract bool IsRunning();
+        public abstract List<IPlant> GetAllPlants();
+        public abstract void AddPlant(int id, string name, float price);
+        public abstract void RemovePlant(int id);
+        public abstract IPlant? GetPlantById(int id);
 
         public static AbstractDataAPI CreateApi()
         {
@@ -29,58 +14,30 @@ namespace Dane
 
         internal sealed class DataAPI : AbstractDataAPI
         {
-            private BallList _ballList;
-            private int sceneHeight;
-            private int sceneWidth;
-            private bool isRunning;
-            private AbstractBallLogger logger;
+            private readonly PlantRepository _plants;
 
             public DataAPI()
             {
-                logger = AbstractBallLogger.CreateBallLoger();
-                _ballList = new BallList();
-                isRunning = false;
+                _plants = new PlantRepository();
             }
 
-            public override void CreateScene(int height, int width)
+            public override List<IPlant> GetAllPlants()
             {
-                sceneHeight = height;
-                sceneWidth = width;
+                return _plants.GetAllPlants();
             }
-            public override List<IBall> GetAllBalls()
+            public override void AddPlant(int id, string name, float price)
             {
-                return _ballList.GetAllBalls();
-            }
-            public override void CreateBall(int id, int x, int y)
-            {
-                Ball ball = new Ball(id, x, y, logger);
-                _ballList.AddBall(ball);
+                _plants.AddPlant(new Plant(id, name, price));
             }
 
-            public override int GetSceneWidth()
+            public override void RemovePlant(int id)
             {
-                return sceneWidth;
-            }
-            public override int GetSceneHeight()
-            {
-                return sceneHeight;
+                _plants.RemovePlant(id);
             }
 
-            public override void TurnOff()
+            public override IPlant? GetPlantById(int id)
             {
-                _ballList.ClearBalls();
-                isRunning = false;
-                logger.Dispose();
-            }
-            public override void TurnOn()
-            {
-                logger.writeSceneSizeToLogFile(sceneHeight, sceneWidth);
-                logger.TurnOn();
-                isRunning = true;
-            }
-            public override bool IsRunning()
-            {
-                return isRunning;
+                return _plants.GetPlantById(id);
             }
         }
     }
