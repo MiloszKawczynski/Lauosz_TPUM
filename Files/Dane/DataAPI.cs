@@ -7,7 +7,7 @@
         public abstract void RemovePlant(int id);
         public abstract IPlant? GetPlantById(int id);
 
-        public static AbstractDataAPI CreateApi()
+        public static AbstractDataAPI CreateAPI()
         {
             return new DataAPI();
         }

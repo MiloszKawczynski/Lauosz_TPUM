@@ -1,47 +1,42 @@
 ﻿using Dane;
-using System.Numerics;
 
 namespace Testy
 {
     [TestClass]
     public class DataAPITest
     {
-
         [TestMethod]
-        public void dataAPIBallPOsitionTest()
+        public void DataAPIAddPlantTest()
         {
-            AbstractDataAPI dataAPI = AbstractDataAPI.CreateApi();
-            dataAPI.CreateBall(1, 10, 10);
-            Assert.IsTrue(dataAPI.GetAllBalls().First().Position.X == 10);
-            Assert.IsTrue(dataAPI.GetAllBalls().First().Position.Y == 10);
-        }
-        
-        [TestMethod]
-        public void DataAPIBallMovementTest()
-        {
-            AbstractDataAPI dataAPI = AbstractDataAPI.CreateApi();
-            dataAPI.CreateBall(1, 10, 10);
-            dataAPI.GetAllBalls().First().Movement = new Vector2(1, 1);
+            AbstractDataAPI dataAPI = AbstractDataAPI.CreateAPI();
+            dataAPI.AddPlant(0, "Kwiatek", 10.0f);
+            var plant = dataAPI.GetAllPlants().First();
 
-
-            Assert.IsTrue(dataAPI.GetAllBalls().First().Movement.X == 1);
-            Assert.IsTrue(dataAPI.GetAllBalls().First().Movement.Y == 1);
+            Assert.IsTrue(plant.ID == 0);
+            Assert.IsTrue(plant.Name == "Kwiatek");
+            Assert.IsTrue(plant.Price == 10.0f);
+            Assert.IsTrue(dataAPI.GetAllPlants().Count == 1);
         }
 
+        [TestMethod]
+        public void DataAPIGetByIDTest()
+        {
+            AbstractDataAPI dataAPI = AbstractDataAPI.CreateAPI();
+            dataAPI.AddPlant(0, "Kwiatek", 10.0f);
+            var plant = dataAPI.GetAllPlants().First();
+
+            Assert.IsTrue(dataAPI.GetPlantById(0) == plant);
+        }
 
         [TestMethod]
-        public void dataAPITurnOnTurnOffTest()
+        public void DataAPIRemovePlantTest()
         {
-            AbstractDataAPI dataAPI = AbstractDataAPI.CreateApi();
-            dataAPI.CreateScene(400, 400);
-            Assert.AreEqual(false, dataAPI.IsRunning());
+            AbstractDataAPI dataAPI = AbstractDataAPI.CreateAPI();
+            dataAPI.AddPlant(0, "Kwiatek", 10.0f);
+            dataAPI.RemovePlant(0);
 
-            dataAPI.TurnOn();
-            Assert.AreEqual(true, dataAPI.IsRunning());
-
-            dataAPI.TurnOff();
-            Assert.AreEqual(false, dataAPI.IsRunning());
-
+            Assert.IsTrue(dataAPI.GetAllPlants().Count == 0);
         }
+
     }
 }
