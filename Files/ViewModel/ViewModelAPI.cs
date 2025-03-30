@@ -6,68 +6,31 @@ using System.Windows.Input;
 
 namespace ViewModel
 {
-    public class ViewModelAPI : INotifyPropertyChanged
+    public class ViewModelAPI  :INotifyPropertyChanged
     {
         private AbstractModelAPI _modelAPI;
-        private int ballsAmount = 1;
-        private int ballR = 30;
-        private bool isRunning = false;
-        public ObservableCollection<IModelBall> ModelBalls => _modelAPI.GetModelBalls();
 
+        public ObservableCollection<IModelPlant> ModelPlants => _modelAPI.GetModelPlants();
 
         public event PropertyChangedEventHandler PropertyChanged;
+        public PurchaseCommand PurchasePlantCommand { get; }
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public String Balls
-        {
-            get { return Convert.ToString(ballsAmount); }
-            set
-            {
-                try
-                {
-                    ballsAmount = Convert.ToInt32(value);
-                    OnPropertyChanged();
-                }
-                catch (System.FormatException)
-                {
-                    ballsAmount = 0;
-                }
-            }
-        }
-
-
         public ViewModelAPI()
         {
             _modelAPI = AbstractModelAPI.CreateAPI();
-            EnableAction = new ActionCommand(TurnOn);
-            DisableAction = new ActionCommand(TurnOff);
-
+            PurchasePlantCommand = new PurchaseCommand(PurchasePlant);
         }
 
-        private void TurnOn()
+        private void PurchasePlant(IModelPlant plant)
         {
-
-            if (isRunning)
-            {
-                _modelAPI.TurnOff();
-            }
-            _modelAPI.TurnOn(500, 666, ballsAmount, ballR);
-            isRunning = true;
-            OnPropertyChanged("ModelBalls");
+            _modelAPI.PurchasePlant(plant.ID);
+            OnPropertyChanged(nameof(ModelPlants));
         }
 
-        private void TurnOff()
-        {
-            
-            _modelAPI.TurnOff();
-            isRunning = false;
-            OnPropertyChanged("ModelBalls");
-        }
-
-        public ICommand EnableAction { get; set; }
-        public ICommand DisableAction { get; set; }
     }
+
 }
