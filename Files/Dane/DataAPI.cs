@@ -6,6 +6,7 @@
         public abstract void AddPlant(int id, string name, float price);
         public abstract void RemovePlant(int id);
         public abstract IPlant? GetPlantById(int id);
+        public abstract void UpdatePlantPrice(int id, float price);
 
         public static AbstractDataAPI CreateAPI()
         {
@@ -38,6 +39,15 @@
             public override IPlant? GetPlantById(int id)
             {
                 return _plants.GetPlantById(id);
+            }
+
+            public override void UpdatePlantPrice(int id, float price)
+            {
+                var plant = GetPlantById(id);
+                if (plant != null)
+                {
+                    plant.Price = price;
+                }
             }
         }
     }

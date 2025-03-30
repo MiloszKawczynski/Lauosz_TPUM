@@ -4,7 +4,7 @@
     {
         public override int ID { get; }
         public override string Name { get; }
-        public override float Price { get; }
+        public override float Price { get; set; }
 
         public Plant(int id, string name, float price)
         {
