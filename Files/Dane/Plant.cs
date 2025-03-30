@@ -5,6 +5,7 @@
         public override int ID { get; }
         public override string Name { get; }
         public override float Price { get; set; }
+        public override event EventHandler<DataEvent> PropertyChanged;
 
         public Plant(int id, string name, float price)
         {
