@@ -1,7 +1,9 @@
 ﻿using System.Net;
 using System.Net.WebSockets;
 using System.Text;
+using System.Text.Json;
 using Logika;
+using SerwerDane;
 
 namespace SerwerPrezentacja
 {
@@ -26,14 +28,48 @@ namespace SerwerPrezentacja
 
         private async void WaitForConnection()
         {
-            var context = await _listener.GetContextAsync();
-            if (context.Request.IsWebSocketRequest)
+            while (true)
             {
-                Console.WriteLine("Otrzymano żądanie WebSocket");
+                var context = await _listener.GetContextAsync();
+                if (context.Request.IsWebSocketRequest)
+                {
+                    var webSocketContext = await context.AcceptWebSocketAsync(null);
+                    _ = HandleClient(webSocketContext.WebSocket);
+                }
             }
-            else
+        }
+
+        private async Task HandleClient(WebSocket webSocket)
+        {
+            var buffer = new byte[1024];
+            try
             {
-                Console.WriteLine("To nie jest żądanie WebSocket");
+                var result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+
+                if (result.MessageType == WebSocketMessageType.Text)
+                {
+                    var message = JsonSerializer.Deserialize<Dictionary<string, object>>(
+                        Encoding.UTF8.GetString(buffer, 0, result.Count));
+
+                    if (message?["command"]?.ToString() == WebSocketCommands.Purchase)
+                    {
+                        var request = JsonSerializer.Deserialize<PurchaseRequest>(message["data"].ToString());
+                        var success = _logic.PurchasePlant(request.PlantId);
+
+                        var response = new
+                        {
+                            command = WebSocketCommands.PurchaseResponse,
+                            data = new { Success = success, PlantId = request.PlantId }
+                        };
+
+                        await webSocket.SendAsync(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(response)),
+                            WebSocketMessageType.Text, true, CancellationToken.None);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Błąd: {ex.Message}");
             }
         }
     }
