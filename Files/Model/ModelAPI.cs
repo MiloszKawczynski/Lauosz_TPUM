@@ -1,4 +1,4 @@
-﻿using Logika;
+﻿using SerwerLogika;
 using System.Collections.ObjectModel;
 
 namespace Model

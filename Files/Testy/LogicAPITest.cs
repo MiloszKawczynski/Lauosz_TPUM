@@ -1,5 +1,5 @@
 ﻿using Dane;
-using Logika;
+using SerwerLogika;
 
 namespace Testy
 {
