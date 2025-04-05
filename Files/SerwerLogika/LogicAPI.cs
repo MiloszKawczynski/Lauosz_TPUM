@@ -1,6 +1,4 @@
-﻿
-using SerwerDane;
-
+﻿using SerwerDane;
 
 namespace SerwerLogika
 {
@@ -12,29 +10,27 @@ namespace SerwerLogika
         public abstract void StartDiscountChecker();
         public abstract void StopDiscountChecker();
 
-        public static AbstractLogicAPI CreateAPI(AbstractDataAPI? dataApi = null)
+        public static AbstractLogicAPI CreateAPI(AbstractDataAPI? dataApi = null, IDiscountNotifier? discountNotifier = null)
         {
-            return new LogicAPI(dataApi ?? AbstractDataAPI.CreateAPI());
+            return new LogicAPI(
+                dataApi ?? AbstractDataAPI.CreateAPI(),
+                discountNotifier ?? new DiscountNotifier()
+            );
         }
 
         internal sealed class LogicAPI : AbstractLogicAPI
         {
-            private AbstractDataAPI _dataAPI;
+            private readonly AbstractDataAPI _dataAPI;
+            private readonly IDiscountNotifier _discountNotifier;
             private int _nextId = 1;
             private CancellationTokenSource? _discountTokenSource;
             private Dictionary<int, float> _originalPrices = new();
 
-            public LogicAPI(AbstractDataAPI? dataAPI)
+            public LogicAPI(AbstractDataAPI dataAPI, IDiscountNotifier discountNotifier)
             {
-                if (dataAPI == null)
-                {
-                    _dataAPI = AbstractDataAPI.CreateAPI();
-                }
-                else
-                {
-                    _dataAPI = dataAPI;
-                }
-                _nextId = dataAPI.GetAllPlants().Count + 1;
+                _dataAPI = dataAPI;
+                _discountNotifier = discountNotifier;
+                _nextId = _dataAPI.GetAllPlants().Count + 1;
                 StartDiscountChecker();
             }
 
@@ -61,20 +57,15 @@ namespace SerwerLogika
                 _discountTokenSource = new CancellationTokenSource();
                 Task.Run(async () =>
                 {
-                    while (_discountTokenSource.Token.IsCancellationRequested == false)
+                    while (!_discountTokenSource.Token.IsCancellationRequested)
                     {
                         if (DateTime.Now.DayOfWeek == DayOfWeek.Friday)
                         {
                             ApplyDiscount(0.9f);
-
-
                             await Task.Delay(TimeSpan.FromDays(1), _discountTokenSource.Token);
                             RestoreOriginalPrices();
                         }
-                        else
-                        {
-                            await Task.Delay(TimeSpan.FromHours(1), _discountTokenSource.Token);
-                        }
+                        await Task.Delay(TimeSpan.FromHours(1), _discountTokenSource.Token);
                     }
                 }, _discountTokenSource.Token);
             }
@@ -83,17 +74,19 @@ namespace SerwerLogika
             {
                 _discountTokenSource?.Cancel();
             }
+
             private void ApplyDiscount(float discountFactor)
             {
                 var plants = _dataAPI.GetAllPlants();
                 foreach (var plant in plants)
                 {
-                    if (_originalPrices.ContainsKey(plant.ID) == false)
+                    if (!_originalPrices.ContainsKey(plant.ID))
                     {
                         _originalPrices[plant.ID] = plant.Price;
                     }
                     _dataAPI.UpdatePlantPrice(plant.ID, plant.Price * discountFactor);
                 }
+                _discountNotifier.NotifyDiscount(1f - discountFactor);
             }
 
             private void RestoreOriginalPrices()
@@ -109,7 +102,6 @@ namespace SerwerLogika
             {
                 StopDiscountChecker();
             }
-
         }
     }
 }

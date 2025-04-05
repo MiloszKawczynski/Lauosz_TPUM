@@ -2,7 +2,7 @@
 using Dane;
 
 
-namespace SerwerLogika
+namespace Logika
 {
     public abstract class AbstractLogicAPI
     {
@@ -67,7 +67,7 @@ namespace SerwerLogika
                         {
                             ApplyDiscount(0.9f);
 
-                          
+
                             await Task.Delay(TimeSpan.FromDays(1), _discountTokenSource.Token);
                             RestoreOriginalPrices();
                         }
@@ -105,8 +105,8 @@ namespace SerwerLogika
                 _originalPrices.Clear();
             }
 
-            ~LogicAPI() 
-            { 
+            ~LogicAPI()
+            {
                 StopDiscountChecker();
             }
 

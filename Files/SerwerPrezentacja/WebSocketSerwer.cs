@@ -2,7 +2,6 @@
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
-using SerwerLogika;
 using SerwerDane;
 
 namespace SerwerPrezentacja
@@ -10,13 +9,10 @@ namespace SerwerPrezentacja
     public class WebSocketServer
     {
         private readonly HttpListener _listener = new();
-        private readonly AbstractLogicAPI _logic;
-        private readonly DiscountNotifier _discountNotifier;
+        private readonly List<WebSocket> _connectedClients = new();
 
-        public WebSocketServer(AbstractLogicAPI logic)
+        public WebSocketServer()
         {
-            _logic = logic;
-            _discountNotifier = new DiscountNotifier();
             _listener = new HttpListener();
         }
 
@@ -44,28 +40,82 @@ namespace SerwerPrezentacja
 
         private async Task HandleClient(WebSocket webSocket)
         {
+            _connectedClients.Add(webSocket);
             var buffer = new byte[1024];
             try
             {
-                var result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
-
-                if (result.MessageType == WebSocketMessageType.Text)
+                while (webSocket.State == WebSocketState.Open)
                 {
-                    var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                    var result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
 
-                    if (message == WebSocketCommands.Purchase)
+                    if (result.MessageType == WebSocketMessageType.Text)
                     {
-                        Console.WriteLine("Otrzymano żądanie zakupu");
+                        var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                        Console.WriteLine($"Otrzymano: {message}");
 
-                        await webSocket.SendAsync(Encoding.UTF8.GetBytes("PURCHASE_SUCCESS"),
-                            WebSocketMessageType.Text, true, CancellationToken.None);
+                        if (message.StartsWith("PURCHASE:"))
+                        {
+                            try
+                            {
+                                var plantIdStr = message.Substring("PURCHASE:".Length);
+                                if (int.TryParse(plantIdStr, out int plantId))
+                                {
+                                    await webSocket.SendAsync(
+                                        Encoding.UTF8.GetBytes("PURCHASE_SUCCESS"),
+                                        WebSocketMessageType.Text,
+                                        true,
+                                        CancellationToken.None);
+                                }
+                                else
+                                {
+                                    await webSocket.SendAsync(
+                                        Encoding.UTF8.GetBytes("ERROR: Invalid plant ID"),
+                                        WebSocketMessageType.Text,
+                                        true,
+                                        CancellationToken.None);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                await webSocket.SendAsync(
+                                    Encoding.UTF8.GetBytes($"ERROR: {ex.Message}"),
+                                    WebSocketMessageType.Text,
+                                    true,
+                                    CancellationToken.None);
+                            }
+                        }
                     }
                 }
             }
-            catch (Exception ex)
+            finally
             {
-                Console.WriteLine($"Błąd: {ex.Message}");
+                _connectedClients.Remove(webSocket);
+                if (webSocket.State == WebSocketState.Open)
+                {
+                    await webSocket.CloseAsync(
+                        WebSocketCloseStatus.NormalClosure,
+                        "Zamykanie połączenia",
+                        CancellationToken.None);
+                }
             }
+        }
+
+        public async Task BroadcastDiscount(float discountValue)
+        {
+            var message = new DiscountNotification { DiscountValue = discountValue };
+            var json = JsonSerializer.Serialize(message);
+            var buffer = Encoding.UTF8.GetBytes(json);
+
+            foreach (var client in _connectedClients.Where(c => c.State == WebSocketState.Open))
+            {
+                await client.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
+            }
+        }
+
+        public async Task StopAsync()
+        {
+            _listener.Stop();
+            _listener.Close();
         }
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SerwerLogika
 {
-    public class DiscountNotifier : IObservable<float>
+    public class DiscountNotifier : IObservable<float>, IDiscountNotifier
     {
         private readonly List<IObserver<float>> _observers = new();
         private readonly Timer _timer;
@@ -11,17 +11,23 @@ namespace SerwerLogika
         public DiscountNotifier()
         {
             _timer = new Timer(CheckDiscount, null,
-                TimeSpan.Zero, TimeSpan.FromMinutes(1));
+                TimeSpan.Zero,
+                TimeSpan.FromMinutes(1));
         }
 
         private void CheckDiscount(object? state)
         {
             if (DateTime.Now.DayOfWeek == DayOfWeek.Friday)
             {
-                foreach (var observer in _observers)
-                {
-                    observer.OnNext(0.2f);
-                }
+                NotifyDiscount(0.2f);
+            }
+        }
+
+        public void NotifyDiscount(float discount)
+        {
+            foreach (var observer in _observers)
+            {
+                observer.OnNext(discount);
             }
         }
 

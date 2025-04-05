@@ -1,4 +1,5 @@
-﻿using SerwerLogika;
+﻿using Logika;
+using Dane;
 using System.Collections.ObjectModel;
 
 namespace Model
@@ -53,9 +54,8 @@ namespace Model
 
             private void LoadPlants()
             {
-                _modelPlants.Clear();
                 var plants = _logicAPI.GetAllPlants();
-
+                _modelPlants.Clear();
                 foreach (var plant in plants)
                 {
                     _modelPlants.Add(new ModelPlant(plant.ID, plant.Name, plant.Price));
