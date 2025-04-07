@@ -1,4 +1,5 @@
-﻿using Model;
+﻿using Dane;
+using Model;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -6,8 +7,9 @@ using System.Windows.Input;
 
 namespace ViewModel
 {
-    public class ViewModelAPI  :INotifyPropertyChanged
+    public class ViewModelAPI : INotifyPropertyChanged
     {
+        private readonly WebSocketDataService _socketService = new();
         private AbstractModelAPI _modelAPI;
 
         public ObservableCollection<IModelPlant> ModelPlants => _modelAPI.GetModelPlants();
@@ -25,10 +27,20 @@ namespace ViewModel
             PurchasePlantCommand = new PurchaseCommand(PurchasePlant);
         }
 
-        private void PurchasePlant(IModelPlant plant)
+        public async Task InitializeConnectionAsync()
         {
-            _modelAPI.PurchasePlant(plant.ID);
-            OnPropertyChanged(nameof(ModelPlants));
+            await _socketService.ConnectAsync();
+        }
+
+        private async void PurchasePlant(IModelPlant plant)
+        {
+            var response = await _socketService.SendCommandAsync(plant.ID);
+            System.Diagnostics.Debug.WriteLine("Otrzymana odpowiedź: " + response);
+            if (response == "PURCHASE_SUCCESS")
+            {
+                _modelAPI.PurchasePlant(plant.ID);
+                OnPropertyChanged(nameof(ModelPlants));
+            }
         }
 
     }

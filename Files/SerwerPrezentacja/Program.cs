@@ -1,9 +1,15 @@
 ﻿using SerwerLogika;
 using SerwerPrezentacja;
 
-var logic = AbstractLogicAPI.CreateAPI();
-var server = new WebSocketServer(logic);
+var server = new WebSocketServer();
+var discountNotifier = new DiscountWebSocketNotifier(server);
+var logic = AbstractLogicAPI.CreateAPI(
+    dataApi: null,
+    discountNotifier: discountNotifier
+);
+
+
 server.Start();
 
-Console.WriteLine("Naciśnij dowolny klawisz, aby zakończyć...");
+Console.WriteLine("Serwer działa. Naciśnij dowolny klawisz, aby zakończyć...");
 Console.ReadKey();
