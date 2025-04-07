@@ -1,19 +1,23 @@
-﻿using Dane;
-using SerwerLogika;
+﻿extern alias ClientLogic;
+using ClientLogic::Logika;
+using Dane;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Linq;
 
 namespace Testy
 {
     [TestClass]
     public class LogicAPITest
     {
-        private AbstractLogicAPI _logicAPI;
-        private AbstractDataAPI _dataAPI;
+        private ClientLogic::Logika.AbstractLogicAPI _logicAPI;
+        private global::Dane.AbstractDataAPI _dataAPI;
 
         [TestInitialize]
         public void Setup()
         {
-            _dataAPI = AbstractDataAPI.CreateAPI();
-            _logicAPI = AbstractLogicAPI.CreateAPI(_dataAPI);
+            _dataAPI = global::Dane.AbstractDataAPI.CreateAPI();
+            _logicAPI = ClientLogic::Logika.AbstractLogicAPI.CreateAPI(_dataAPI);
         }
 
         [TestMethod]
@@ -46,6 +50,5 @@ namespace Testy
             var success = _logicAPI.PurchasePlant(999);
             Assert.IsFalse(success);
         }
-
     }
 }
