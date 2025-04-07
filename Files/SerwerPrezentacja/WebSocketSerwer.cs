@@ -2,7 +2,7 @@
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
-using Logika;
+using SerwerLogika;
 using SerwerDane;
 
 namespace SerwerPrezentacja
@@ -11,10 +11,13 @@ namespace SerwerPrezentacja
     {
         private readonly HttpListener _listener = new();
         private readonly AbstractLogicAPI _logic;
+        private readonly DiscountNotifier _discountNotifier;
 
         public WebSocketServer(AbstractLogicAPI logic)
         {
             _logic = logic;
+            _discountNotifier = new DiscountNotifier();
+            _listener = new HttpListener();
         }
 
         public void Start(string url = "http://localhost:8080/")
@@ -48,21 +51,13 @@ namespace SerwerPrezentacja
 
                 if (result.MessageType == WebSocketMessageType.Text)
                 {
-                    var message = JsonSerializer.Deserialize<Dictionary<string, object>>(
-                        Encoding.UTF8.GetString(buffer, 0, result.Count));
+                    var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
 
-                    if (message?["command"]?.ToString() == WebSocketCommands.Purchase)
+                    if (message == WebSocketCommands.Purchase)
                     {
-                        var request = JsonSerializer.Deserialize<PurchaseRequest>(message["data"].ToString());
-                        var success = _logic.PurchasePlant(request.PlantId);
+                        Console.WriteLine("Otrzymano żądanie zakupu");
 
-                        var response = new
-                        {
-                            command = WebSocketCommands.PurchaseResponse,
-                            data = new { Success = success, PlantId = request.PlantId }
-                        };
-
-                        await webSocket.SendAsync(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(response)),
+                        await webSocket.SendAsync(Encoding.UTF8.GetBytes("PURCHASE_SUCCESS"),
                             WebSocketMessageType.Text, true, CancellationToken.None);
                     }
                 }

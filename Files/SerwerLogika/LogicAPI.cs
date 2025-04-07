@@ -2,7 +2,7 @@
 using SerwerDane;
 
 
-namespace Logika
+namespace SerwerLogika
 {
     public abstract class AbstractLogicAPI
     {

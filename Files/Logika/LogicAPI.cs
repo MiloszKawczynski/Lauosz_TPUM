@@ -2,7 +2,7 @@
 using Dane;
 
 
-namespace Logika
+namespace SerwerLogika
 {
     public abstract class AbstractLogicAPI
     {

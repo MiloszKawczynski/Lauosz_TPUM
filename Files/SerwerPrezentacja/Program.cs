@@ -1,4 +1,4 @@
-﻿using Logika;
+﻿using SerwerLogika;
 using SerwerPrezentacja;
 
 var logic = AbstractLogicAPI.CreateAPI();
