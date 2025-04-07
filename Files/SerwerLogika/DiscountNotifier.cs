@@ -41,6 +41,7 @@ namespace SerwerLogika
         {
             private readonly List<IObserver<float>> _observers;
             private readonly IObserver<float> _observer;
+            private bool _disposed;
 
             public Unsubscriber(List<IObserver<float>> observers, IObserver<float> observer)
             {
@@ -50,8 +51,13 @@ namespace SerwerLogika
 
             public void Dispose()
             {
+                if (_disposed) return;
+
                 if (_observer != null && _observers.Contains(_observer))
+                {
                     _observers.Remove(_observer);
+                }
+                _disposed = true;
             }
         }
     }

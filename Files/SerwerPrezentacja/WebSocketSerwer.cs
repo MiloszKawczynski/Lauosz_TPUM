@@ -102,7 +102,7 @@ namespace SerwerPrezentacja
 
         public async Task BroadcastDiscount(float discountValue)
         {
-            var message = new DiscountNotification { DiscountValue = discountValue };
+            var message = new { DiscountValue = discountValue }; // anonimowy typ
             var json = JsonSerializer.Serialize(message);
             var buffer = Encoding.UTF8.GetBytes(json);
 
@@ -110,12 +110,6 @@ namespace SerwerPrezentacja
             {
                 await client.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
             }
-        }
-
-        public async Task StopAsync()
-        {
-            _listener.Stop();
-            _listener.Close();
         }
     }
 }

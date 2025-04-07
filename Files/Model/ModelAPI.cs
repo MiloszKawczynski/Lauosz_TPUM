@@ -1,5 +1,4 @@
 ﻿using Logika;
-using Dane;
 using System.Collections.ObjectModel;
 
 namespace Model
