@@ -7,19 +7,21 @@ namespace Testy
     [TestClass]
     public class WebSocketServiceTest
     {
-        [TestMethod]
-        public async Task ShouldConnectToServer()
-        {
-            var service = new global::Dane.WebSocketDataService();
-            try
-            {
-                await service.ConnectAsync();
-                Assert.IsTrue(true);
-            }
-            catch
-            {
-                Assert.Inconclusive("Test wymaga działającego serwera WebSocket");
-            }
-        }
+        // Test prepared, working only with server online
+
+        //[TestMethod]
+        //public async Task ShouldConnectToServer()
+        //{
+        //    var service = new global::Dane.WebSocketDataService();
+        //    try
+        //    {
+        //        await service.ConnectAsync();
+        //        Assert.IsTrue(true);
+        //    }
+        //    catch
+        //    {
+        //        Assert.Inconclusive("Test wymaga działającego serwera WebSocket");
+        //    }
+        //}
     }
 }

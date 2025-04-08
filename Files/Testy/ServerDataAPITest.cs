@@ -1,9 +1,10 @@
-﻿using Dane;
+﻿
+using SerwerDane;
 
 namespace Testy
 {
     [TestClass]
-    public class DataAPITest
+    public class ServerDataAPITest
     {
         [TestMethod]
         public void DataAPIAddPlantTest()
@@ -37,6 +38,5 @@ namespace Testy
 
             Assert.IsTrue(dataAPI.GetAllPlants().Count == 0);
         }
-
     }
 }

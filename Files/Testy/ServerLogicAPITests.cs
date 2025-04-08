@@ -1,23 +1,21 @@
-﻿extern alias ClientLogic;
-using ClientLogic::Logika;
-using Dane;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Linq;
+﻿
+using SerwerDane;
+using SerwerLogika;
 
 namespace Testy
 {
     [TestClass]
-    public class LogicAPITest
+    public class ServerLogicAPITests
     {
-        private ClientLogic::Logika.AbstractLogicAPI _logicAPI;
-        private global::Dane.AbstractDataAPI _dataAPI;
+
+        private AbstractLogicAPI _logicAPI;
+        private AbstractDataAPI _dataAPI;
 
         [TestInitialize]
         public void Setup()
         {
-            _dataAPI = global::Dane.AbstractDataAPI.CreateAPI();
-            _logicAPI = ClientLogic::Logika.AbstractLogicAPI.CreateAPI(_dataAPI);
+            _dataAPI =AbstractDataAPI.CreateAPI();
+            _logicAPI = AbstractLogicAPI.CreateAPI(_dataAPI);
         }
 
         [TestMethod]
