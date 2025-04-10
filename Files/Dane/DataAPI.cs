@@ -7,6 +7,7 @@
         public abstract void RemovePlant(int id);
         public abstract IPlant? GetPlantById(int id);
         public abstract void UpdatePlantPrice(int id, float price);
+        public abstract Task InitializeConnectionAsync();
 
         public static AbstractDataAPI CreateAPI()
         {
@@ -16,10 +17,12 @@
         internal sealed class DataAPI : AbstractDataAPI
         {
             private readonly PlantRepository _plants;
+            private readonly AbstractWebSocketDataService _websocketDataService;
 
             public DataAPI()
             {
                 _plants = new PlantRepository();
+                _websocketDataService = AbstractWebSocketDataService.Create();
             }
 
             public override List<IPlant> GetAllPlants()
@@ -48,6 +51,11 @@
                 {
                     plant.Price = price;
                 }
+            }
+
+            public override async Task InitializeConnectionAsync()
+            {
+                await _websocketDataService.ConnectAsync();
             }
         }
     }

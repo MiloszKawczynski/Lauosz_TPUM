@@ -9,7 +9,7 @@ namespace ViewModel
 {
     public class ViewModelAPI : INotifyPropertyChanged
     {
-        private readonly WebSocketDataService _socketService = new();
+        //private readonly AbstractWebSocketDataService _socketService = new();
         private AbstractModelAPI _modelAPI;
 
         public ObservableCollection<IModelPlant> ModelPlants => _modelAPI.GetModelPlants();

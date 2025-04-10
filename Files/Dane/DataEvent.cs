@@ -1,6 +1,6 @@
 ﻿namespace Dane
 {
-    public class DataEvent
+    public abstract class DataEvent
     {
         public IPlant plant;
         public DataEvent(IPlant plant)
