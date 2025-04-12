@@ -1,48 +1,75 @@
-﻿using Dane;
-using Model;
+﻿using Model;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Windows.Input;
 
 namespace ViewModel
 {
-    public class ViewModelAPI : INotifyPropertyChanged
+    public abstract class AbstractViewModelAPI : INotifyPropertyChanged
     {
-        //private readonly AbstractWebSocketDataService _socketService = new();
-        private AbstractModelAPI _modelAPI;
+        public static AbstractViewModelAPI CreateAPI(AbstractModelAPI abstractModelAPI = default)
+        {
+            return new ViewModelAPI(abstractModelAPI ?? AbstractModelAPI.CreateAPI());
+        }
+        public abstract ObservableCollection<IModelPlant> ModelPlants { get; }
+        public abstract ICommand PurchasePlantCommand { get; }
 
-        public ObservableCollection<IModelPlant> ModelPlants => _modelAPI.GetModelPlants();
+        public abstract Task InitializeConnectionAsync();
 
         public event PropertyChangedEventHandler PropertyChanged;
-        public PurchaseCommand PurchasePlantCommand { get; }
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        public abstract void SubscribeToDiscounts(IObserver<float> observer);
+
+        protected void RaisePropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public ViewModelAPI()
+        internal sealed class ViewModelAPI : AbstractViewModelAPI
         {
-            _modelAPI = AbstractModelAPI.CreateAPI();
-            PurchasePlantCommand = new PurchaseCommand(PurchasePlant);
-        }
+            private readonly AbstractModelAPI _modelAPI;
+            private IDisposable _discountSubscription;
 
-        public async Task InitializeConnectionAsync()
-        {
-            await _socketService.ConnectAsync();
-        }
+            public override ObservableCollection<IModelPlant> ModelPlants => _modelAPI.GetModelPlants();
 
-        private async void PurchasePlant(IModelPlant plant)
-        {
-            var response = await _socketService.SendCommandAsync(plant.ID);
-            System.Diagnostics.Debug.WriteLine("Otrzymana odpowiedź: " + response);
-            if (response == "PURCHASE_SUCCESS")
+            public override ICommand PurchasePlantCommand { get; }
+
+            public ViewModelAPI(AbstractModelAPI abstractModelAPI)
             {
-                _modelAPI.PurchasePlant(plant.ID);
-                OnPropertyChanged(nameof(ModelPlants));
+                if (abstractModelAPI == null)
+                {
+                    _modelAPI = AbstractModelAPI.CreateAPI();
+                }
+                else
+                {
+                    _modelAPI = abstractModelAPI;
+                }
+                PurchasePlantCommand = new PurchaseCommand(PurchasePlant);
+            }
+
+            public override async Task InitializeConnectionAsync()
+            {
+                await _modelAPI.InitializeConnectionAsync();
+            }
+
+            public override void SubscribeToDiscounts(IObserver<float> observer)
+            {
+                _discountSubscription?.Dispose();
+                _discountSubscription = _modelAPI.DiscountUpdates.Subscribe(observer);
+            }
+
+            private async void PurchasePlant(object parameter)
+            {
+                if (parameter is IModelPlant plant)
+                {
+                    var result = await _modelAPI.PurchasePlantAsync(plant.ID);
+                    if (result)
+                    {
+                        RaisePropertyChanged(nameof(ModelPlants));
+                    }
+                }
             }
         }
-
     }
+    
 
 }

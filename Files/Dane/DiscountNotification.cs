@@ -1,6 +1,6 @@
 ﻿namespace Dane
 {
-    public class DiscountNotification
+    internal class DiscountNotification
     {
         public float DiscountValue { get; set; }
     }

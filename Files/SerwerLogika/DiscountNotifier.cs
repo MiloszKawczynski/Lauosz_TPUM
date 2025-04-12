@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace SerwerLogika
+﻿namespace SerwerLogika
 {
-    public class DiscountNotifier : IObservable<float>, IDiscountNotifier
+    internal class DiscountNotifier : IObservable<float>, IDiscountNotifier
     {
         private readonly List<IObserver<float>> _observers = new();
         private readonly Timer _timer;

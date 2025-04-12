@@ -8,7 +8,7 @@ namespace SerwerDane
         public abstract string Name { get; }
         public abstract float Price { get; set; }
 
-        public abstract event EventHandler<DataEvent> PropertyChanged;
+        public abstract event EventHandler<AbstractDataEvent> PropertyChanged;
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue("ID: ", ID);

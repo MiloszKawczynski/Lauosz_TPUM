@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Windows;
-using ViewModel;
-using Dane;
 using System.Windows.Threading;
+using ViewModel;
 
 namespace View
 {
@@ -39,7 +38,7 @@ namespace View
         public MainWindow()
         {
             InitializeComponent();
-            var vm = new ViewModelAPI();
+            var vm = AbstractViewModelAPI.CreateAPI();
             DataContext = vm;
             _ = vm.InitializeConnectionAsync();
 
@@ -47,9 +46,7 @@ namespace View
             {
                 try
                 {
-                    var service = new WebSocketDataService();
-                    await service.ConnectAsync();
-                    service.DiscountUpdates().Subscribe(new DiscountObserver(Dispatcher));
+                    vm.SubscribeToDiscounts(new DiscountObserver(Dispatcher));
                 }
                 catch (Exception ex)
                 {

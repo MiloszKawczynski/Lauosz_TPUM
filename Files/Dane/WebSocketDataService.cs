@@ -1,7 +1,6 @@
 ﻿using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
-using static Dane.AbstractDataAPI;
 
 namespace Dane
 {
@@ -26,6 +25,8 @@ namespace Dane
             {
                 await _ws.ConnectAsync(new Uri(SERVER_URL), CancellationToken.None);
             }
+
+        
 
             public override async Task<string> SendCommandAsync(int plantId)
             {

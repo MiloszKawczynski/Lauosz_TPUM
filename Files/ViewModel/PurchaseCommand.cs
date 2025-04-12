@@ -1,10 +1,9 @@
-﻿
-using Model;
+﻿using Model;
 using System.Windows.Input;
 
 namespace ViewModel
 {
-    public class PurchaseCommand : ICommand
+    internal class PurchaseCommand : ICommand
     {
          public event EventHandler CanExecuteChanged;
          private readonly Action<IModelPlant> _execute;

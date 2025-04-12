@@ -8,6 +8,8 @@
         public abstract IPlant? GetPlantById(int id);
         public abstract void UpdatePlantPrice(int id, float price);
         public abstract Task InitializeConnectionAsync();
+        public abstract Task<string> SendCommandAsync(int plantId);
+        public abstract IObservable<float> DiscountUpdates();
 
         public static AbstractDataAPI CreateAPI()
         {
@@ -56,6 +58,16 @@
             public override async Task InitializeConnectionAsync()
             {
                 await _websocketDataService.ConnectAsync();
+            }
+
+            public override async Task<string> SendCommandAsync(int plantId)
+            {
+                return await _websocketDataService.SendCommandAsync(plantId);
+            }
+
+            public override IObservable<float> DiscountUpdates()
+            {
+                return _websocketDataService.DiscountUpdates();
             }
         }
     }

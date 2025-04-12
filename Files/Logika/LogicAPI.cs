@@ -1,5 +1,4 @@
-﻿
-using Dane;
+﻿using Dane;
 
 
 namespace Logika
@@ -11,6 +10,9 @@ namespace Logika
         public abstract void AddNewPlant(string name, float price);
         public abstract void StartDiscountChecker();
         public abstract void StopDiscountChecker();
+        public abstract Task InitializeConnectionAsync();
+        public abstract Task<string> SendCommandAsync(int plantId);
+        public abstract IObservable<float> DiscountUpdates { get; }
 
         public static AbstractLogicAPI CreateAPI(AbstractDataAPI? dataApi = null)
         {
@@ -22,6 +24,7 @@ namespace Logika
             private AbstractDataAPI _dataAPI;
             private int _nextId = 1;
             private CancellationTokenSource? _discountTokenSource;
+            private readonly IObservable<float> _discountUpdates;
             private Dictionary<int, float> _originalPrices = new();
 
             public LogicAPI(AbstractDataAPI? dataAPI)
@@ -35,8 +38,11 @@ namespace Logika
                     _dataAPI = dataAPI;
                 }
                 _nextId = dataAPI.GetAllPlants().Count + 1;
+                _discountUpdates = _dataAPI.DiscountUpdates();
                 StartDiscountChecker();
             }
+
+            public override IObservable<float> DiscountUpdates => _discountUpdates;
 
             public override List<IPlant> GetAllPlants()
             {
@@ -103,6 +109,16 @@ namespace Logika
                     _dataAPI.UpdatePlantPrice(kvp.Key, kvp.Value);
                 }
                 _originalPrices.Clear();
+            }
+
+            public override async Task InitializeConnectionAsync()
+            {
+                await _dataAPI.InitializeConnectionAsync();
+            }
+
+            public override async Task<string> SendCommandAsync(int plantId)
+            {
+                return await _dataAPI.SendCommandAsync(plantId);
             }
 
             ~LogicAPI()

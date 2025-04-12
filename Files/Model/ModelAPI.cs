@@ -12,11 +12,17 @@ namespace Model
         public abstract ObservableCollection<IModelPlant> GetModelPlants();
         public abstract void AddPlant(string name, float price);
         public abstract void PurchasePlant(int id);
+        public abstract Task InitializeConnectionAsync();
+        public abstract Task<bool> PurchasePlantAsync(int plantId);
+        public abstract IObservable<float> DiscountUpdates { get; }
+
 
         internal sealed class ModelAPI : AbstractModelAPI
         {
+            
             private AbstractLogicAPI _logicAPI;
             private ObservableCollection<IModelPlant> _modelPlants = new ObservableCollection<IModelPlant>();
+
             public ModelAPI(AbstractLogicAPI abstractLogicAPI)
             {
                 if (abstractLogicAPI == null)
@@ -33,6 +39,7 @@ namespace Model
                 LoadPlants();
             }
 
+            public override IObservable<float> DiscountUpdates => _logicAPI.DiscountUpdates;
 
             public override ObservableCollection<IModelPlant> GetModelPlants()
             {
@@ -49,6 +56,25 @@ namespace Model
             {
                 _logicAPI.PurchasePlant(id);
                 LoadPlants();
+            }
+
+            public override async Task InitializeConnectionAsync()
+            {
+                await _logicAPI.InitializeConnectionAsync();
+            }
+
+
+            public override async Task<bool> PurchasePlantAsync(int plantId)
+            {
+                var result = await _logicAPI.SendCommandAsync(plantId);
+
+                if (result == "PURCHASE_SUCCESS")
+                {
+                    PurchasePlant(plantId);
+                    return true;
+                }
+
+                return false;
             }
 
             private void LoadPlants()

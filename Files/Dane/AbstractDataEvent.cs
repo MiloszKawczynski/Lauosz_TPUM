@@ -1,4 +1,4 @@
-﻿namespace SerwerDane
+﻿namespace Dane
 {
     public abstract class AbstractDataEvent
     {
