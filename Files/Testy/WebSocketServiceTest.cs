@@ -9,19 +9,19 @@ namespace Testy
     {
         // Test prepared, working only with server online
 
-        //[TestMethod]
-        //public async Task ShouldConnectToServer()
-        //{
-        //    var service = new global::Dane.WebSocketDataService();
-        //    try
-        //    {
-        //        await service.ConnectAsync();
-        //        Assert.IsTrue(true);
-        //    }
-        //    catch
-        //    {
-        //        Assert.Inconclusive("Test wymaga działającego serwera WebSocket");
-        //    }
-        //}
+        [TestMethod]
+        public async Task ShouldConnectToServer()
+        {
+            var service = AbstractWebSocketDataService.Create();
+            try
+            {
+                await service.ConnectAsync();
+                Assert.IsTrue(true);
+            }
+            catch
+            {
+                Assert.Inconclusive("Test wymaga działającego serwera WebSocket");
+            }
+        }
     }
 }
