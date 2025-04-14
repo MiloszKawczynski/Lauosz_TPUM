@@ -23,6 +23,7 @@
 		<ProjectReference Include="..\Logika\Logika.csproj" Aliases="ClientLogic" />
 		<ProjectReference Include="..\Model\Model.csproj" />
 		<ProjectReference Include="..\SerwerLogika\SerwerLogika.csproj" />
+		<ProjectReference Include="..\SerwerPrezentacja\SerwerPrezentacja.csproj" />
 	</ItemGroup>
 
 </Project>

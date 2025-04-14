@@ -1,6 +1,5 @@
 ﻿using Dane;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Threading.Tasks;
+using SerwerPrezentacja;
 
 namespace Testy
 {
@@ -12,6 +11,8 @@ namespace Testy
         [TestMethod]
         public async Task ShouldSuccessfullyPurchasePlant()
         {
+            var server = new WebSocketServer();
+            server.Start();
             var service = AbstractWebSocketDataService.Create();
             try
             {
