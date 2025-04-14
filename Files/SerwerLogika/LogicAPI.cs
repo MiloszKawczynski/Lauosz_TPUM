@@ -1,4 +1,5 @@
 ﻿using SerwerDane;
+using SharedModel;
 
 namespace SerwerLogika
 {

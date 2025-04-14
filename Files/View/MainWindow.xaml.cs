@@ -33,6 +33,8 @@ namespace View
             {
                 // Optional: Add completion logic if needed
             }
+
+       
         }
 
         public MainWindow()

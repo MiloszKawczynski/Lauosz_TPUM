@@ -3,18 +3,37 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Plants" Height="350" Width="525">
     <Grid>
-        <ListView ItemsSource="{Binding ModelPlants}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Przycisk odświeżania -->
+        <Button Grid.Row="0" Content="Odśwież rośliny" 
+                Command="{Binding LoadPlantsCommand}"
+                Margin="5"/>
+
+        <!-- Lista roślin -->
+        <ListView Grid.Row="1" ItemsSource="{Binding ModelPlants}" Margin="5">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="ID" DisplayMemberBinding="{Binding ID}" />
-                    <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" />
-                    <GridViewColumn Header="Price" DisplayMemberBinding="{Binding Price}" />
-                    <GridViewColumn>
+                    <GridViewColumn Header="ID" Width="50" DisplayMemberBinding="{Binding ID}"/>
+                    <GridViewColumn Header="Nazwa" Width="150" DisplayMemberBinding="{Binding Name}"/>
+                    <GridViewColumn Header="Cena" Width="80">
+                        <GridViewColumn.DisplayMemberBinding>
+                            <Binding Path="Price" StringFormat="{}{0:C2}"/>
+                        </GridViewColumn.DisplayMemberBinding>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Akcja" Width="100">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Content="Kup"
-                                        Command="{Binding DataContext.PurchasePlantCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                        CommandParameter="{Binding}" />
+                                <Button Content="Kup" 
+                                        Command="{Binding DataContext.PurchasePlantCommand, 
+                                                 RelativeSource={RelativeSource AncestorType=Window}}"
+                                        CommandParameter="{Binding}"
+                                        Padding="5" Margin="2"
+                                        IsEnabled="{Binding IsEnabled, 
+                                                   RelativeSource={RelativeSource AncestorType=Window}}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>

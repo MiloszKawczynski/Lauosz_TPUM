@@ -1,4 +1,6 @@
-﻿namespace SerwerDane
+﻿using SharedModel;
+
+namespace SerwerDane
 {
     internal class PlantRepository : IPlantRepository
     {

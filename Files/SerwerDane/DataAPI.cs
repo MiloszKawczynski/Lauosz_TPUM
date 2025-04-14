@@ -1,4 +1,6 @@
-﻿namespace SerwerDane
+﻿using SharedModel;
+
+namespace SerwerDane
 {
     public abstract class AbstractDataAPI
     {

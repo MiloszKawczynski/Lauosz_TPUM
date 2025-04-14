@@ -10,9 +10,8 @@ namespace Model
             return new ModelAPI(abstractLogicAPI ?? AbstractLogicAPI.CreateAPI());
         }
         public abstract ObservableCollection<IModelPlant> GetModelPlants();
-        public abstract void AddPlant(string name, float price);
-        public abstract void PurchasePlant(int id);
         public abstract Task InitializeConnectionAsync();
+        public abstract Task LoadPlantsAsync();
         public abstract Task<bool> PurchasePlantAsync(int plantId);
         public abstract IObservable<float> DiscountUpdates { get; }
 
@@ -33,10 +32,31 @@ namespace Model
                 {
                     _logicAPI = abstractLogicAPI;
                 }
-                _logicAPI.AddNewPlant("Cactus", 10.0f);
-                _logicAPI.AddNewPlant("Fern", 15.0f);
-                _logicAPI.AddNewPlant("Rose", 5.0f);
-                LoadPlants();
+                InitializeAsync().ConfigureAwait(false);
+            }
+
+            private async Task InitializeAsync()
+            {
+                await _logicAPI.InitializeConnectionAsync();
+                await LoadPlantsAsync();
+            }
+
+            public override async Task LoadPlantsAsync()
+            {
+                try
+                {
+                    var plants = await _logicAPI.GetPlantsAsync();
+                    _modelPlants.Clear();
+
+                    foreach (var plant in plants)
+                    {
+                        _modelPlants.Add(new ModelPlant(plant.ID, plant.Name, plant.Price));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Błąd ładowania roślin: {ex.Message}");
+                }
             }
 
             public override IObservable<float> DiscountUpdates => _logicAPI.DiscountUpdates;
@@ -44,18 +64,6 @@ namespace Model
             public override ObservableCollection<IModelPlant> GetModelPlants()
             {
                 return _modelPlants;
-            }
-
-            public override void AddPlant(string name, float price)
-            {
-                _logicAPI.AddNewPlant(name, price);
-                LoadPlants();
-            }
-
-            public override void PurchasePlant(int id)
-            {
-                _logicAPI.PurchasePlant(id);
-                LoadPlants();
             }
 
             public override async Task InitializeConnectionAsync()
@@ -70,21 +78,12 @@ namespace Model
 
                 if (result == "PURCHASE_SUCCESS")
                 {
-                    PurchasePlant(plantId);
+                    //_logicAPI.PurchasePlant(plantId);
+                    await LoadPlantsAsync();
                     return true;
                 }
 
                 return false;
-            }
-
-            private void LoadPlants()
-            {
-                var plants = _logicAPI.GetAllPlants();
-                _modelPlants.Clear();
-                foreach (var plant in plants)
-                {
-                    _modelPlants.Add(new ModelPlant(plant.ID, plant.Name, plant.Price));
-                }
             }
 
         }

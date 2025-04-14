@@ -1,6 +1,7 @@
 ﻿using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
+using SharedModel;
 
 namespace Dane
 {
@@ -8,6 +9,8 @@ namespace Dane
     {
         public abstract Task ConnectAsync();
         public abstract Task<string> SendCommandAsync(int plantId);
+        public abstract Task SendAsync(string message);
+        public abstract Task<string> ReceiveAsync();
         public abstract IObservable<float> DiscountUpdates();
         public abstract void Dispose();
 
@@ -26,8 +29,6 @@ namespace Dane
                 await _ws.ConnectAsync(new Uri(SERVER_URL), CancellationToken.None);
             }
 
-        
-
             public override async Task<string> SendCommandAsync(int plantId)
             {
                 var message = $"PURCHASE:{plantId}";
@@ -37,6 +38,21 @@ namespace Dane
                 var responseBuffer = new byte[1024];
                 var result = await _ws.ReceiveAsync(new ArraySegment<byte>(responseBuffer), CancellationToken.None);
                 return Encoding.UTF8.GetString(responseBuffer, 0, result.Count);
+            }
+
+            public override async Task SendAsync(string message)
+            {
+                Console.WriteLine($"Wysyłane dane: {message}"); 
+                var buffer = Encoding.UTF8.GetBytes(message);
+                await _ws.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
+            }
+
+            public override async Task<string> ReceiveAsync()
+            {
+                var buffer = new byte[1024];
+                var result = await _ws.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                return message;
             }
 
             public override IObservable<float> DiscountUpdates()
@@ -65,9 +81,10 @@ namespace Dane
                             if (result.MessageType == WebSocketMessageType.Text)
                             {
                                 var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
-                                if (message.Contains("DiscountValue")) // Przykład parsowania JSON
+                                if (message.Contains("DiscountValue"))
                                 {
                                     var discount = JsonSerializer.Deserialize<DiscountNotification>(message);
+
                                     observer.OnNext(discount.DiscountValue);
                                 }
                             }

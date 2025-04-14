@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.5.33502.453
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dane", "Files\Dane\Dane.csproj", "{5E550BF9-501D-4001-83F7-06F8A89831F9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CF6522F5-F236-4AF1-A561-C62848A5A111} = {CF6522F5-F236-4AF1-A561-C62848A5A111}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logika", "Files\Logika\Logika.csproj", "{5F825B97-00E5-4112-9FA0-AFC88D3E4F04}"
 EndProject
@@ -31,10 +34,15 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Serwer", "Serwer", "{D19B33AE-73EA-4B0B-9146-D93E6F3272A8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SerwerDane", "Files\SerwerDane\SerwerDane.csproj", "{09030B3C-3DAF-4D97-A51F-8580E8924E92}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CF6522F5-F236-4AF1-A561-C62848A5A111} = {CF6522F5-F236-4AF1-A561-C62848A5A111}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SerwerLogika", "Files\SerwerLogika\SerwerLogika.csproj", "{2A9B9503-D277-4496-B1DD-02F13159252A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SerwerPrezentacja", "Files\SerwerPrezentacja\SerwerPrezentacja.csproj", "{2CDAC70A-4A57-4425-87FA-F8A0775005A5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedModel", "SharedModel\SharedModel.csproj", "{CF6522F5-F236-4AF1-A561-C62848A5A111}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -78,6 +86,10 @@ Global
 		{2CDAC70A-4A57-4425-87FA-F8A0775005A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2CDAC70A-4A57-4425-87FA-F8A0775005A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2CDAC70A-4A57-4425-87FA-F8A0775005A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF6522F5-F236-4AF1-A561-C62848A5A111}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF6522F5-F236-4AF1-A561-C62848A5A111}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF6522F5-F236-4AF1-A561-C62848A5A111}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF6522F5-F236-4AF1-A561-C62848A5A111}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

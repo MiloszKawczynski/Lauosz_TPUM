@@ -2,7 +2,7 @@
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
-using SerwerDane;
+using SerwerLogika;
 
 namespace SerwerPrezentacja
 {
@@ -10,6 +10,12 @@ namespace SerwerPrezentacja
     {
         private readonly HttpListener _listener = new();
         private readonly List<WebSocket> _connectedClients = new();
+        private IRequestHandler _requestHandler;
+
+        public void SetRequestHandler(IRequestHandler handler)
+        {
+            _requestHandler = handler;
+        }
 
         public WebSocketServer()
         {
@@ -53,37 +59,12 @@ namespace SerwerPrezentacja
                         var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
                         Console.WriteLine($"Otrzymano: {message}");
 
-                        if (message.StartsWith("PURCHASE:"))
-                        {
-                            try
-                            {
-                                var plantIdStr = message.Substring("PURCHASE:".Length);
-                                if (int.TryParse(plantIdStr, out int plantId))
-                                {
-                                    await webSocket.SendAsync(
-                                        Encoding.UTF8.GetBytes("PURCHASE_SUCCESS"),
-                                        WebSocketMessageType.Text,
-                                        true,
-                                        CancellationToken.None);
-                                }
-                                else
-                                {
-                                    await webSocket.SendAsync(
-                                        Encoding.UTF8.GetBytes("ERROR: Invalid plant ID"),
-                                        WebSocketMessageType.Text,
-                                        true,
-                                        CancellationToken.None);
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                await webSocket.SendAsync(
-                                    Encoding.UTF8.GetBytes($"ERROR: {ex.Message}"),
-                                    WebSocketMessageType.Text,
-                                    true,
-                                    CancellationToken.None);
-                            }
-                        }
+                        var response = await _requestHandler.HandleRequest(message, webSocket);
+                        await webSocket.SendAsync(
+                            Encoding.UTF8.GetBytes(response),
+                            WebSocketMessageType.Text,
+                            true,
+                            CancellationToken.None);
                     }
                 }
             }
@@ -102,8 +83,8 @@ namespace SerwerPrezentacja
 
         public async Task BroadcastDiscount(float discountValue)
         {
-            var message = new { DiscountValue = discountValue }; // anonimowy typ
-            var json = JsonSerializer.Serialize(message);
+            var notification = new SharedModel.DiscountNotification { DiscountValue = discountValue };
+            var json = JsonSerializer.Serialize(notification);
             var buffer = Encoding.UTF8.GetBytes(json);
 
             foreach (var client in _connectedClients.Where(c => c.State == WebSocketState.Open))

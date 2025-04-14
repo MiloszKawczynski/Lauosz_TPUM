@@ -1,15 +1,14 @@
-﻿namespace Dane
+﻿using System.Text.Json;
+using SharedModel;
+
+namespace Dane
 {
     public abstract class AbstractDataAPI
     {
-        public abstract List<IPlant> GetAllPlants();
-        public abstract void AddPlant(int id, string name, float price);
-        public abstract void RemovePlant(int id);
-        public abstract IPlant? GetPlantById(int id);
-        public abstract void UpdatePlantPrice(int id, float price);
         public abstract Task InitializeConnectionAsync();
         public abstract Task<string> SendCommandAsync(int plantId);
         public abstract IObservable<float> DiscountUpdates();
+        public abstract Task<IEnumerable<IPlant>> GetAllPlantsAsync();
 
         public static AbstractDataAPI CreateAPI()
         {
@@ -18,41 +17,13 @@
 
         internal sealed class DataAPI : AbstractDataAPI
         {
-            private readonly PlantRepository _plants;
+            
             private readonly AbstractWebSocketDataService _websocketDataService;
 
             public DataAPI()
             {
-                _plants = new PlantRepository();
+                
                 _websocketDataService = AbstractWebSocketDataService.Create();
-            }
-
-            public override List<IPlant> GetAllPlants()
-            {
-                return _plants.GetAllPlants();
-            }
-            public override void AddPlant(int id, string name, float price)
-            {
-                _plants.AddPlant(new Plant(id, name, price));
-            }
-
-            public override void RemovePlant(int id)
-            {
-                _plants.RemovePlant(id);
-            }
-
-            public override IPlant? GetPlantById(int id)
-            {
-                return _plants.GetPlantById(id);
-            }
-
-            public override void UpdatePlantPrice(int id, float price)
-            {
-                var plant = GetPlantById(id);
-                if (plant != null)
-                {
-                    plant.Price = price;
-                }
             }
 
             public override async Task InitializeConnectionAsync()
@@ -68,6 +39,13 @@
             public override IObservable<float> DiscountUpdates()
             {
                 return _websocketDataService.DiscountUpdates();
+            }
+
+            public override async Task<IEnumerable<IPlant>> GetAllPlantsAsync()
+            {
+                await _websocketDataService.SendAsync("GET_PLANTS");
+                var json = await _websocketDataService.ReceiveAsync();
+                return JsonSerializer.Deserialize<List<Plant>>(json) ?? new List<Plant>();
             }
         }
     }

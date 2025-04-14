@@ -1,18 +1,18 @@
 ﻿using Dane;
+using SharedModel;
 
 
 namespace Logika
 {
     public abstract class AbstractLogicAPI
     {
-        public abstract List<IPlant> GetAllPlants();
-        public abstract bool PurchasePlant(int id);
-        public abstract void AddNewPlant(string name, float price);
+        //public abstract bool PurchasePlant(int id);
         public abstract void StartDiscountChecker();
         public abstract void StopDiscountChecker();
         public abstract Task InitializeConnectionAsync();
         public abstract Task<string> SendCommandAsync(int plantId);
         public abstract IObservable<float> DiscountUpdates { get; }
+        public abstract Task<IEnumerable<IPlant>> GetPlantsAsync();
 
         public static AbstractLogicAPI CreateAPI(AbstractDataAPI? dataApi = null)
         {
@@ -37,30 +37,23 @@ namespace Logika
                 {
                     _dataAPI = dataAPI;
                 }
-                _nextId = dataAPI.GetAllPlants().Count + 1;
                 _discountUpdates = _dataAPI.DiscountUpdates();
                 StartDiscountChecker();
             }
+            public override async Task<IEnumerable<IPlant>> GetPlantsAsync()
+            {
+                var plants = await _dataAPI.GetAllPlantsAsync();
+                return plants.OrderBy(p => p.Name);
+            }
 
             public override IObservable<float> DiscountUpdates => _discountUpdates;
-
-            public override List<IPlant> GetAllPlants()
-            {
-                return _dataAPI.GetAllPlants();
-            }
-
-            public override bool PurchasePlant(int id)
-            {
-                var plant = _dataAPI.GetPlantById(id);
-                if (plant == null) return false;
-                _dataAPI.RemovePlant(id);
-                return true;
-            }
-
-            public override void AddNewPlant(string name, float price)
-            {
-                _dataAPI.AddPlant(_nextId++, name, price);
-            }
+            //public override bool PurchasePlant(int id)
+            //{
+            //    var plant = _dataAPI.GetPlantById(id);
+            //    if (plant == null) return false;
+            //    _dataAPI.RemovePlant(id);
+            //    return true;
+            //}
 
             public override void StartDiscountChecker()
             {
@@ -75,7 +68,7 @@ namespace Logika
 
 
                             await Task.Delay(TimeSpan.FromDays(1), _discountTokenSource.Token);
-                            RestoreOriginalPrices();
+                            //RestoreOriginalPrices();
                         }
                         else
                         {
@@ -91,24 +84,15 @@ namespace Logika
             }
             private void ApplyDiscount(float discountFactor)
             {
-                var plants = _dataAPI.GetAllPlants();
-                foreach (var plant in plants)
-                {
-                    if (_originalPrices.ContainsKey(plant.ID) == false)
-                    {
-                        _originalPrices[plant.ID] = plant.Price;
-                    }
-                    _dataAPI.UpdatePlantPrice(plant.ID, plant.Price * discountFactor);
-                }
-            }
-
-            private void RestoreOriginalPrices()
-            {
-                foreach (var kvp in _originalPrices)
-                {
-                    _dataAPI.UpdatePlantPrice(kvp.Key, kvp.Value);
-                }
-                _originalPrices.Clear();
+                //var plants = _dataAPI.GetAllPlants();
+                //foreach (var plant in plants)
+                //{
+                //    if (_originalPrices.ContainsKey(plant.ID) == false)
+                //    {
+                //        _originalPrices[plant.ID] = plant.Price;
+                //    }
+                    //_dataAPI.UpdatePlantPrice(plant.ID, plant.Price * discountFactor);
+                //}
             }
 
             public override async Task InitializeConnectionAsync()

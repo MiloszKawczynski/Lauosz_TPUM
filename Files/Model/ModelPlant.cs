@@ -3,21 +3,50 @@ using System.Runtime.CompilerServices;
 
 namespace Model
 {
-    internal class ModelPlant : IModelPlant, INotifyPropertyChanged
+    public abstract class IModelPlant : INotifyPropertyChanged
     {
-        public override int ID { get;}
-        public override string Name { get; }
-        public override float Price { get; set;}
+        public int ID { get; }
+        public string Name { get; }
+        public float Price { get; set; }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        public static IModelPlant CreateModelPlant(int id, string name, float price)
+        {
+            return new ModelPlant(id, name, price);
+        }
+    }
+
+    internal class ModelPlant : IModelPlant
+    {
+        private float _price;
+
+        public int ID { get; }
+        public string Name { get; }
+
+        public float Price
+        {
+            get => _price;
+            set
+            {
+                if (_price != value)
+                {
+                    _price = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         public ModelPlant(int id, string name, float price)
         {
             ID = id;
             Name = name;
-            Price = price;
+            _price = price;
         }
 
-        public override event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
