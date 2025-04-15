@@ -11,6 +11,8 @@ namespace SerwerPrezentacja
         private readonly HttpListener _listener = new();
         private readonly List<WebSocket> _connectedClients = new();
         private IRequestHandler _requestHandler;
+        private readonly SemaphoreSlim _clientLock = new(1, 1);
+        private Timer _plantBroadcastTimer;
 
         public void SetRequestHandler(IRequestHandler handler)
         {
@@ -28,7 +30,27 @@ namespace SerwerPrezentacja
             _listener.Start();
             Console.WriteLine($"Serwer WebSocket działa na {url}");
 
+            StartPlantBroadcast();
             WaitForConnection();
+        }
+
+        private void StartPlantBroadcast()
+        {
+            _plantBroadcastTimer = new Timer(async _ =>
+            {
+                var plants = _requestHandler.GetAllPlantsForBroadcast();
+                var json = JsonSerializer.Serialize(plants, new JsonSerializerOptions { WriteIndented = true });
+                var buffer = Encoding.UTF8.GetBytes(json);
+
+                foreach (var client in _connectedClients.Where(c => c.State == WebSocketState.Open))
+                {
+                    await client.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
+                }
+                Console.WriteLine("Wysłano listę roślin do klientów");
+            },
+            null,
+            TimeSpan.Zero,             
+            TimeSpan.FromMinutes(1));
         }
 
         private async void WaitForConnection()
@@ -42,11 +64,14 @@ namespace SerwerPrezentacja
                     _ = HandleClient(webSocketContext.WebSocket);
                 }
             }
+            
         }
 
         private async Task HandleClient(WebSocket webSocket)
         {
+            await _clientLock.WaitAsync();
             _connectedClients.Add(webSocket);
+            _clientLock.Release();
             var buffer = new byte[1024];
             try
             {
@@ -70,7 +95,9 @@ namespace SerwerPrezentacja
             }
             finally
             {
+                await _clientLock.WaitAsync();
                 _connectedClients.Remove(webSocket);
+                _clientLock.Release();
                 if (webSocket.State == WebSocketState.Open)
                 {
                     await webSocket.CloseAsync(

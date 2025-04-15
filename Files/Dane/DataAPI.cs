@@ -1,14 +1,17 @@
-﻿using System.Text.Json;
+﻿using System.Collections.Generic;
+using System;
+using System.Text.Json;
 using SharedModel;
 
 namespace Dane
 {
     public abstract class AbstractDataAPI
     {
-        public abstract Task InitializeConnectionAsync();
-        public abstract Task<string> SendCommandAsync(int plantId);
+        public abstract Task InitializeConnectionAsync(IObserver<float> discount, IObserver<List<IPlant>> plant);
+        public abstract Task SendCommandAsync(int plantId);
         public abstract IObservable<float> DiscountUpdates();
         public abstract Task<IEnumerable<IPlant>> GetAllPlantsAsync();
+        public abstract IObservable<List<IPlant>> PlantUpdates();
 
         public static AbstractDataAPI CreateAPI()
         {
@@ -26,19 +29,24 @@ namespace Dane
                 _websocketDataService = AbstractWebSocketDataService.Create();
             }
 
-            public override async Task InitializeConnectionAsync()
+            public override async Task InitializeConnectionAsync(IObserver<float> discount, IObserver<List<IPlant>> plant)
             {
-                await _websocketDataService.ConnectAsync();
+                await _websocketDataService.ConnectAsync(discount, plant);
             }
 
-            public override async Task<string> SendCommandAsync(int plantId)
+            public override async Task SendCommandAsync(int plantId)
             {
-                return await _websocketDataService.SendCommandAsync(plantId);
+               await _websocketDataService.SendCommandAsync(plantId);
             }
 
             public override IObservable<float> DiscountUpdates()
             {
                 return _websocketDataService.DiscountUpdates();
+            }
+
+            public override IObservable<List<IPlant>> PlantUpdates()
+            {
+                return _websocketDataService.PlantUpdates();
             }
 
             public override async Task<IEnumerable<IPlant>> GetAllPlantsAsync()

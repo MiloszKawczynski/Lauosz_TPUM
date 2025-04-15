@@ -6,7 +6,7 @@ namespace SerwerLogika
     public abstract class AbstractLogicAPI
     {
         public abstract List<IPlant> GetAllPlants();
-        public abstract bool PurchasePlant(int id);
+        public abstract Task<bool> PurchasePlantAsync(int id);
         public abstract void AddNewPlant(string name, float price);
         public abstract void StartDiscountChecker();
         public abstract void StopDiscountChecker();
@@ -21,6 +21,7 @@ namespace SerwerLogika
 
         internal sealed class LogicAPI : AbstractLogicAPI
         {
+            private readonly SemaphoreSlim _semaphore = new(1, 1);
             private readonly AbstractDataAPI _dataAPI;
             private readonly IDiscountNotifier _discountNotifier;
             private int _nextId = 1;
@@ -40,17 +41,33 @@ namespace SerwerLogika
                 return _dataAPI.GetAllPlants();
             }
 
-            public override bool PurchasePlant(int id)
+            public override async Task<bool> PurchasePlantAsync(int id)
             {
-                var plant = _dataAPI.GetPlantById(id);
-                if (plant == null) return false;
-                _dataAPI.RemovePlant(id);
-                return true;
+                await _semaphore.WaitAsync();
+                try
+                {
+                    var plant = _dataAPI.GetPlantById(id);
+                    if (plant == null) return false;
+                    _dataAPI.RemovePlant(id);
+                    return true;
+                }
+                finally
+                {
+                    _semaphore.Release();
+                }
             }
 
             public override void AddNewPlant(string name, float price)
             {
-                _dataAPI.AddPlant(_nextId++, name, price);
+                _semaphore.Wait();
+                try
+                {
+                    _dataAPI.AddPlant(_nextId++, name, price);
+                }
+                finally
+                {
+                    _semaphore.Release();
+                }
             }
 
             public override void StartDiscountChecker()
@@ -62,9 +79,9 @@ namespace SerwerLogika
                     {
                         if (DateTime.Now.DayOfWeek == DayOfWeek.Friday)
                         {
-                            ApplyDiscount(0.9f);
+                            await ApplyDiscountAsync(0.9f);
                             await Task.Delay(TimeSpan.FromDays(1), _discountTokenSource.Token);
-                            RestoreOriginalPrices();
+                            await RestoreOriginalPricesAsync();
                         }
                         await Task.Delay(TimeSpan.FromHours(1), _discountTokenSource.Token);
                     }
@@ -76,27 +93,45 @@ namespace SerwerLogika
                 _discountTokenSource?.Cancel();
             }
 
-            private void ApplyDiscount(float discountFactor)
+            private async Task ApplyDiscountAsync(float discountFactor)
             {
-                var plants = _dataAPI.GetAllPlants();
-                foreach (var plant in plants)
+                await _semaphore.WaitAsync();
+                try
                 {
-                    if (!_originalPrices.ContainsKey(plant.ID))
+                    var plants = _dataAPI.GetAllPlants();
+                    foreach (var plant in plants)
                     {
-                        _originalPrices[plant.ID] = plant.Price;
+                        if (!_originalPrices.ContainsKey(plant.ID))
+                        {
+                            _originalPrices[plant.ID] = plant.Price;
+                        }
+                        _dataAPI.UpdatePlantPrice(plant.ID, plant.Price * discountFactor);
                     }
-                    _dataAPI.UpdatePlantPrice(plant.ID, plant.Price * discountFactor);
+                    _discountNotifier.NotifyDiscount(1f - discountFactor);
                 }
-                _discountNotifier.NotifyDiscount(1f - discountFactor);
+                finally
+                {
+                    _semaphore.Release();
+                }
             }
 
-            private void RestoreOriginalPrices()
+            private async Task RestoreOriginalPricesAsync()
             {
-                foreach (var kvp in _originalPrices)
+                await _semaphore.WaitAsync();
+                Console.WriteLine("Lock");
+                try
                 {
-                    _dataAPI.UpdatePlantPrice(kvp.Key, kvp.Value);
+                    foreach (var kvp in _originalPrices)
+                    {
+                        _dataAPI.UpdatePlantPrice(kvp.Key, kvp.Value);
+                    }
+                    _originalPrices.Clear();
                 }
-                _originalPrices.Clear();
+                finally
+                {
+                    _semaphore.Release();
+                    Console.WriteLine("Open");
+                }
             }
 
             ~LogicAPI()

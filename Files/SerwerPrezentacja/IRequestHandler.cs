@@ -2,12 +2,14 @@
 using System.Net.WebSockets;
 using System.Text.Json;
 using SerwerLogika;
+using SharedModel;
 
 namespace SerwerPrezentacja
 {
     public abstract class IRequestHandler
     {
         public abstract Task<string> HandleRequest(string message, WebSocket webSocket);
+        public abstract List<IPlant> GetAllPlantsForBroadcast();
     }
 
     internal class WebSocketRequestHandler : IRequestHandler
@@ -17,6 +19,11 @@ namespace SerwerPrezentacja
         public WebSocketRequestHandler(AbstractLogicAPI logic)
         {
             _logic = logic;
+        }
+
+        public override List<IPlant> GetAllPlantsForBroadcast()
+        {
+            return _logic.GetAllPlants();
         }
 
         public override async Task<string> HandleRequest(string message, WebSocket webSocket)
@@ -30,12 +37,14 @@ namespace SerwerPrezentacja
             else if (message.StartsWith("PURCHASE:"))
             {
                 var plantIdStr = message.Substring("PURCHASE:".Length);
-                if (int.TryParse(plantIdStr, out int plantId) && _logic.PurchasePlant(plantId))
+                if (int.TryParse(plantIdStr, out int plantId))
                 {
-                    return "PURCHASE_SUCCESS";
+                    bool success = await _logic.PurchasePlantAsync(plantId);
+                    return success ? "PURCHASE_SUCCESS" : "PURCHASE_FAILED";
                 }
                 return "ERROR: Invalid plant ID";
             }
+
             return "ERROR: Unknown command";
         }
     }

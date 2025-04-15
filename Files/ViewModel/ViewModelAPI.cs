@@ -1,4 +1,7 @@
 ﻿using Model;
+using SharedModel;
+using System.Collections.Generic;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Input;
@@ -14,11 +17,12 @@ namespace ViewModel
         public abstract ObservableCollection<IModelPlant> ModelPlants { get; }
         public abstract ICommand LoadPlantsCommand { get; }
         public abstract ICommand PurchasePlantCommand { get; }
-        public abstract Task InitializeAsync();
-        public abstract Task InitializeConnectionAsync();
+        public abstract Task InitializeConnectionAsync(IObserver<float> discount, IObserver<List<IPlant>> plant);
 
         public event PropertyChangedEventHandler PropertyChanged;
         public abstract void SubscribeToDiscounts(IObserver<float> observer);
+        public abstract void SubscribeToPlants(IObserver<List<IPlant>> observer);
+        public abstract void UpdatePlants(List<IPlant> plants);
 
         protected void RaisePropertyChanged(string propertyName)
         {
@@ -28,6 +32,7 @@ namespace ViewModel
         internal sealed class ViewModelAPI : AbstractViewModelAPI
         {
             private readonly AbstractModelAPI _modelAPI;
+            private IDisposable _plantsSubscription;
             private IDisposable _discountSubscription;
 
             public override ObservableCollection<IModelPlant> ModelPlants => _modelAPI.GetModelPlants();
@@ -49,28 +54,36 @@ namespace ViewModel
                 PurchasePlantCommand = new PurchaseCommand(PurchasePlant);
             }
 
-            public override async Task InitializeAsync()
-            {
-                try
-                {
-                    await _modelAPI.InitializeConnectionAsync();
-                    await LoadPlantsAsync();
-                }
-                catch (Exception ex)
-                {
+            
 
-                }
-            }
-
-            public override async Task InitializeConnectionAsync()
+            public override async Task InitializeConnectionAsync(IObserver<float> discount, IObserver<List<IPlant>> plant)
             {
-                await _modelAPI.InitializeConnectionAsync();
+                _ = Task.Run(async () =>
+                {
+                    
+                    SubscribeToDiscounts(discount);
+                    SubscribeToPlants(plant);
+                    
+                });
+                await _modelAPI.InitializeConnectionAsync( discount, plant);
             }
 
             public override void SubscribeToDiscounts(IObserver<float> observer)
             {
                 _discountSubscription?.Dispose();
                 _discountSubscription = _modelAPI.DiscountUpdates.Subscribe(observer);
+            }
+
+            public override void SubscribeToPlants(IObserver<List<IPlant>> observer)
+            {
+                _plantsSubscription?.Dispose();
+                _plantsSubscription = _modelAPI.PlantUpdates.Subscribe(observer);
+            }
+
+            public override void UpdatePlants(List<IPlant> plants)
+            {
+                _modelAPI.UpdatePlants(plants);
+                RaisePropertyChanged(nameof(ModelPlants));
             }
 
             private async Task LoadPlantsAsync()
@@ -90,11 +103,8 @@ namespace ViewModel
             {
                 if (parameter is IModelPlant plant)
                 {
-                    var result = await _modelAPI.PurchasePlantAsync(plant.ID);
-                    if (result)
-                    {
-                        RaisePropertyChanged(nameof(ModelPlants));
-                    }
+                    await _modelAPI.PurchasePlantAsync(plant.ID);
+                    RaisePropertyChanged(nameof(ModelPlants));
                 }
             }
         }

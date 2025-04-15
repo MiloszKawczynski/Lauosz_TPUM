@@ -1,7 +1,8 @@
 ﻿using System;
-using System.Threading.Tasks;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Threading;
+using SharedModel;
 using ViewModel;
 
 namespace View
@@ -31,10 +32,39 @@ namespace View
 
             public void OnCompleted()
             {
-                // Optional: Add completion logic if needed
             }
 
        
+        }
+
+        private class PlantObserver : IObserver<List<IPlant>>
+        {
+            private readonly Dispatcher _dispatcher;
+            private readonly AbstractViewModelAPI vm;
+
+            public PlantObserver(Dispatcher dispatcher, AbstractViewModelAPI vm)
+            {
+                _dispatcher = dispatcher;
+                this.vm = vm;
+            }
+
+            public void OnNext(List<IPlant> plants)
+            {
+                _dispatcher.Invoke(() =>
+                    vm.UpdatePlants(plants));
+            }
+
+            public void OnError(Exception ex)
+            {
+                _dispatcher.Invoke(() =>
+                    MessageBox.Show($"Błąd: {ex.Message}"));
+            }
+
+            public void OnCompleted()
+            {
+            }
+
+
         }
 
         public MainWindow()
@@ -42,20 +72,9 @@ namespace View
             InitializeComponent();
             var vm = AbstractViewModelAPI.CreateAPI();
             DataContext = vm;
-            _ = vm.InitializeConnectionAsync();
+            _ = vm.InitializeConnectionAsync(new DiscountObserver(Dispatcher), new PlantObserver(Dispatcher, vm));
 
-            _ = Task.Run(async () =>
-            {
-                try
-                {
-                    vm.SubscribeToDiscounts(new DiscountObserver(Dispatcher));
-                }
-                catch (Exception ex)
-                {
-                    Dispatcher.Invoke(() =>
-                        MessageBox.Show($"Błąd połączenia: {ex.Message}"));
-                }
-            });
+            
         }
     }
 }

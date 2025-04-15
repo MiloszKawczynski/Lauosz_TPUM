@@ -4,29 +4,62 @@ namespace SerwerDane
 {
     internal class PlantRepository : IPlantRepository
     {
+        private readonly SemaphoreSlim _semaphore = new(1, 1);
         private readonly List<IPlant> _plants = new();
 
         public override List<IPlant> GetAllPlants()
         {
-            return _plants;
+            _semaphore.Wait();
+            try
+            {
+                return _plants;
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public override IPlant? GetPlantById(int id)
         {
-            return _plants.FirstOrDefault(p => p.ID == id);
+            _semaphore.Wait();
+            try
+            {
+                return _plants.FirstOrDefault(p => p.ID == id);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public override void AddPlant(IPlant plant)
         {
-            _plants.Add(plant);
+            _semaphore.Wait();
+            try
+            {
+                _plants.Add(plant);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public override void RemovePlant(int id)
         {
-            var plant = _plants.FirstOrDefault(p => p.ID == id);
-            if (plant != null)
+            _semaphore.Wait();
+            try
             {
-                _plants.Remove(plant);
+                var plant = _plants.FirstOrDefault(p => p.ID == id);
+                if (plant != null)
+                {
+                    _plants.Remove(plant);
+                }
+            }
+            finally
+            {
+                _semaphore.Release();
             }
         }
     }

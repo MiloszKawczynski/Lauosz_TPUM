@@ -1,17 +1,17 @@
-﻿using Dane;
+﻿using System.Collections.Generic;
+using System;
+using Dane;
 using SharedModel;
 
 
 namespace Logika
 {
     public abstract class AbstractLogicAPI
-    {
-        //public abstract bool PurchasePlant(int id);
-        public abstract void StartDiscountChecker();
-        public abstract void StopDiscountChecker();
-        public abstract Task InitializeConnectionAsync();
-        public abstract Task<string> SendCommandAsync(int plantId);
+    { 
+        public abstract Task InitializeConnectionAsync(IObserver<float> discount, IObserver<List<IPlant>> plant);
+        public abstract Task SendCommandAsync(int plantId);
         public abstract IObservable<float> DiscountUpdates { get; }
+        public abstract IObservable<List<IPlant>> PlantUpdates { get; }
         public abstract Task<IEnumerable<IPlant>> GetPlantsAsync();
 
         public static AbstractLogicAPI CreateAPI(AbstractDataAPI? dataApi = null)
@@ -22,10 +22,8 @@ namespace Logika
         internal sealed class LogicAPI : AbstractLogicAPI
         {
             private AbstractDataAPI _dataAPI;
-            private int _nextId = 1;
-            private CancellationTokenSource? _discountTokenSource;
             private readonly IObservable<float> _discountUpdates;
-            private Dictionary<int, float> _originalPrices = new();
+            private readonly IObservable<List<IPlant>> _plantUpdates;
 
             public LogicAPI(AbstractDataAPI? dataAPI)
             {
@@ -38,7 +36,7 @@ namespace Logika
                     _dataAPI = dataAPI;
                 }
                 _discountUpdates = _dataAPI.DiscountUpdates();
-                StartDiscountChecker();
+                _plantUpdates = _dataAPI.PlantUpdates();
             }
             public override async Task<IEnumerable<IPlant>> GetPlantsAsync()
             {
@@ -47,69 +45,17 @@ namespace Logika
             }
 
             public override IObservable<float> DiscountUpdates => _discountUpdates;
-            //public override bool PurchasePlant(int id)
-            //{
-            //    var plant = _dataAPI.GetPlantById(id);
-            //    if (plant == null) return false;
-            //    _dataAPI.RemovePlant(id);
-            //    return true;
-            //}
+            public override IObservable<List<IPlant>> PlantUpdates => _plantUpdates;
 
-            public override void StartDiscountChecker()
+            public override async Task InitializeConnectionAsync(IObserver<float> discount, IObserver<List<IPlant>> plant)
             {
-                _discountTokenSource = new CancellationTokenSource();
-                Task.Run(async () =>
-                {
-                    while (_discountTokenSource.Token.IsCancellationRequested == false)
-                    {
-                        if (DateTime.Now.DayOfWeek == DayOfWeek.Friday)
-                        {
-                            ApplyDiscount(0.9f);
-
-
-                            await Task.Delay(TimeSpan.FromDays(1), _discountTokenSource.Token);
-                            //RestoreOriginalPrices();
-                        }
-                        else
-                        {
-                            await Task.Delay(TimeSpan.FromHours(1), _discountTokenSource.Token);
-                        }
-                    }
-                }, _discountTokenSource.Token);
+                await _dataAPI.InitializeConnectionAsync(discount, plant);
             }
 
-            public override void StopDiscountChecker()
+            public override async Task SendCommandAsync(int plantId)
             {
-                _discountTokenSource?.Cancel();
+                await _dataAPI.SendCommandAsync(plantId);
             }
-            private void ApplyDiscount(float discountFactor)
-            {
-                //var plants = _dataAPI.GetAllPlants();
-                //foreach (var plant in plants)
-                //{
-                //    if (_originalPrices.ContainsKey(plant.ID) == false)
-                //    {
-                //        _originalPrices[plant.ID] = plant.Price;
-                //    }
-                    //_dataAPI.UpdatePlantPrice(plant.ID, plant.Price * discountFactor);
-                //}
-            }
-
-            public override async Task InitializeConnectionAsync()
-            {
-                await _dataAPI.InitializeConnectionAsync();
-            }
-
-            public override async Task<string> SendCommandAsync(int plantId)
-            {
-                return await _dataAPI.SendCommandAsync(plantId);
-            }
-
-            ~LogicAPI()
-            {
-                StopDiscountChecker();
-            }
-
         }
     }
 }
