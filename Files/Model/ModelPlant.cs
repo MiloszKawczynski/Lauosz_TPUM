@@ -5,9 +5,9 @@ namespace Model
 {
     public abstract class IModelPlant : INotifyPropertyChanged
     {
-        public int ID { get; }
-        public string Name { get; }
-        public float Price { get; set; }
+        public abstract int ID { get; }
+        public abstract string Name { get; }
+        public abstract float Price { get; set; }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -19,12 +19,10 @@ namespace Model
 
     internal class ModelPlant : IModelPlant
     {
+        public override int ID { get; }
+        public override string Name { get; }
         private float _price;
-
-        public int ID { get; }
-        public string Name { get; }
-
-        public float Price
+        public override float Price
         {
             get => _price;
             set

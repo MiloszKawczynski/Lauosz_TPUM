@@ -31,7 +31,7 @@ namespace Testy
             try
             {
                 await service.ConnectAsync();
-                var response = await service.SendCommandAsync(1); // ID rośliny
+                var response = await service.SendCommandAsync(1);
                 Assert.AreEqual("PURCHASE_SUCCESS", response);
             }
             catch
