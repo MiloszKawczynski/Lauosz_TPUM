@@ -7,7 +7,7 @@ using SharedModel;
 namespace Logika
 {
     public abstract class AbstractLogicAPI
-    { 
+    {
         public abstract Task InitializeConnectionAsync(IObserver<float> discount, IObserver<List<IPlant>> plant);
         public abstract Task SendCommandAsync(int plantId);
         public abstract IObservable<float> DiscountUpdates { get; }

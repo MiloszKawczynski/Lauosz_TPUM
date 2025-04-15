@@ -49,7 +49,7 @@ namespace SerwerPrezentacja
                 Console.WriteLine("Wysłano listę roślin do klientów");
             },
             null,
-            TimeSpan.Zero,             
+            TimeSpan.FromSeconds(4),
             TimeSpan.FromMinutes(1));
         }
 
@@ -64,7 +64,7 @@ namespace SerwerPrezentacja
                     _ = HandleClient(webSocketContext.WebSocket);
                 }
             }
-            
+
         }
 
         private async Task HandleClient(WebSocket webSocket)
