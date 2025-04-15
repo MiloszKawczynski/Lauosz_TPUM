@@ -24,7 +24,7 @@ namespace Model
 
         internal sealed class ModelAPI : AbstractModelAPI
         {
-            
+
             private AbstractLogicAPI _logicAPI;
             private ObservableCollection<IModelPlant> _modelPlants = new ObservableCollection<IModelPlant>();
             private readonly SemaphoreSlim _lock = new SemaphoreSlim(1, 1);
@@ -39,7 +39,7 @@ namespace Model
                 {
                     _logicAPI = abstractLogicAPI;
                 }
-               
+
             }
 
             public override async Task LoadPlantsAsync()
@@ -96,8 +96,8 @@ namespace Model
             {
                 await _logicAPI.SendCommandAsync(plantId);
 
-               await LoadPlantsAsync(); 
-               
+                await LoadPlantsAsync();
+
             }
 
         }

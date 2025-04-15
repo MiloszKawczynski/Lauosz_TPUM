@@ -57,7 +57,7 @@ namespace Dane
                         var plants = JsonSerializer.Deserialize<List<Plant>>(message)?.Cast<IPlant>().ToList();
                         if (plants != null)
                         {
-                             _plantObserver.OnNext(plants);
+                            _plantObserver.OnNext(plants);
                         }
                     }
                     catch (Exception ex)
@@ -89,7 +89,7 @@ namespace Dane
 
             public override async Task SendAsync(string message)
             {
-                Console.WriteLine($"Wysyłane dane: {message}"); 
+                Console.WriteLine($"Wysyłane dane: {message}");
                 var buffer = Encoding.UTF8.GetBytes(message);
                 await _ws.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
             }
@@ -103,7 +103,7 @@ namespace Dane
             }
 
             public override IObservable<List<IPlant>> PlantUpdates()
-{
+            {
                 return new PlantObservable(_ws);
             }
 
@@ -144,7 +144,7 @@ namespace Dane
                 {
                     return new Unsubscriber(() => { });
                 }
-                
+
 
                 private class Unsubscriber : IDisposable
                 {
