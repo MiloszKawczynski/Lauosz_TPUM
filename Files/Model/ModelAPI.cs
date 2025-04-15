@@ -70,7 +70,10 @@ namespace Model
                 _modelPlants.Clear();
                 foreach (var plant in plants)
                 {
-                    _modelPlants.Add(new ModelPlant(plant.ID, plant.Name, plant.Price));
+                    if (plant.Price <= 50.00f)
+                    {
+                        _modelPlants.Add(new ModelPlant(plant.ID, plant.Name, plant.Price));
+                    }
                 }
             }
 
