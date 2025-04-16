@@ -45,12 +45,7 @@ namespace Model
                 try
                 {
                     var plants = await _logicAPI.GetPlantsAsync();
-                    _modelPlants.Clear();
-
-                    foreach (var plant in plants)
-                    {
-                        _modelPlants.Add(new ModelPlant(plant.ID, plant.Name, plant.Price));
-                    }
+                    UpdatePlants(plants.ToList());
                 }
                 catch (Exception ex)
                 {

@@ -39,7 +39,7 @@ namespace Logika
             public override async Task<IEnumerable<IPlant>> GetPlantsAsync()
             {
                 var plants = await _dataAPI.GetAllPlantsAsync();
-                return plants.OrderBy(p => p.Name);
+                return plants;
             }
 
             public override IObservable<float> DiscountUpdates => _discountUpdates;
