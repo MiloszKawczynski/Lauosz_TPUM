@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System;
-using Dane;
+﻿using Dane;
 using SharedModel;
 
 

@@ -1,9 +1,6 @@
 ﻿using Logika;
 using SharedModel;
-using System.Collections.Generic;
-using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 
 namespace Model
 {

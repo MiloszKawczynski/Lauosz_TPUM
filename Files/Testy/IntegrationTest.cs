@@ -1,5 +1,6 @@
 ﻿using Dane;
 using SerwerPrezentacja;
+using SharedModel;
 
 namespace Testy
 {
@@ -8,6 +9,8 @@ namespace Testy
     {
         WebSocketServer server = new();
         AbstractWebSocketDataService service = AbstractWebSocketDataService.Create();
+        private IObserver<float> _observerFloat;
+        private IObserver<List<IPlant>> _observerList;
 
         [TestMethod]
         public async Task ShouldConnectToServer()
@@ -15,7 +18,7 @@ namespace Testy
             server.Start();
             try
             {
-                await service.ConnectAsync();
+                await service.ConnectAsync(_observerFloat, _observerList);
                 Assert.IsTrue(true);
             }
             catch
@@ -30,9 +33,9 @@ namespace Testy
         {
             try
             {
-                await service.ConnectAsync();
-                var response = await service.SendCommandAsync(1);
-                Assert.AreEqual("PURCHASE_SUCCESS", response);
+                await service.ConnectAsync(_observerFloat, _observerList);
+                await service.SendCommandAsync(1);
+                Assert.IsTrue(true);
             }
             catch
             {

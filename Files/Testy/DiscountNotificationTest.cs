@@ -1,6 +1,4 @@
-﻿
-using System;
-using SerwerLogika;
+﻿using SerwerLogika;
 
 namespace Testy
 {

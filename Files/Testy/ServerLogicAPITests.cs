@@ -1,6 +1,7 @@
 ﻿
 using SerwerDane;
 using SerwerLogika;
+using SharedModel;
 
 namespace Testy
 {
@@ -10,6 +11,7 @@ namespace Testy
 
         private AbstractLogicAPI _logicAPI;
         private AbstractDataAPI _dataAPI;
+       
 
         [TestInitialize]
         public void Setup()
@@ -29,13 +31,13 @@ namespace Testy
         }
 
         [TestMethod]
-        public void LogicAPIPurchase()
+        public async Task LogicAPIPurchase()
         {
             _logicAPI.AddNewPlant("Bonsai", 100.0f);
             var plantsBefore = _logicAPI.GetAllPlants();
             Assert.AreEqual(1, plantsBefore.Count);
 
-            bool success = _logicAPI.PurchasePlant(plantsBefore[0].ID);
+            var success = await _logicAPI.PurchasePlantAsync(plantsBefore[0].ID);
             Assert.IsTrue(success);
 
             var plantsAfter = _logicAPI.GetAllPlants();
@@ -43,10 +45,12 @@ namespace Testy
         }
 
         [TestMethod]
-        public void LogicAPIPurchasePlantFailTest()
+        public async Task LogicAPIPurchasePlantFailTest()
         {
-            var success = _logicAPI.PurchasePlant(999);
+            var success = await _logicAPI.PurchasePlantAsync(999);
             Assert.IsFalse(success);
         }
+
+
     }
 }
