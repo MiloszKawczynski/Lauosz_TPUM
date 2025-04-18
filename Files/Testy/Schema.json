@@ -1,0 +1,66 @@
+{
+  "type": "object",
+  "properties": {
+    "Plant": {
+      "type": "object",
+      "properties": {
+        "ID": {
+          "type": "integer"
+        },
+        "Name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "Price": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "ID",
+        "Name",
+        "Price"
+      ]
+    },
+    "DiscountNotification": {
+      "type": "object",
+      "properties": {
+        "DiscountValue": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "DiscountValue"
+      ]
+    },
+    "PlantList": {
+      "type": "array",
+      "items": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "ID": {
+            "type": "integer"
+          },
+          "Name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "Price": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "ID",
+          "Name",
+          "Price"
+        ]
+      }
+    }
+  }
+}

@@ -26,4 +26,9 @@
 		<ProjectReference Include="..\SerwerPrezentacja\SerwerPrezentacja.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.15" />
+		<PackageReference Include="NJsonSchema.CodeGeneration.CSharp" Version="11.0.0" />
+	</ItemGroup>
+
 </Project>

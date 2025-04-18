@@ -1,7 +1,12 @@
 ﻿
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Schema;
+using Newtonsoft.Json.Schema.Generation;
 using SerwerDane;
 using SerwerLogika;
 using SharedModel;
+
 
 namespace Testy
 {
@@ -11,12 +16,12 @@ namespace Testy
 
         private AbstractLogicAPI _logicAPI;
         private AbstractDataAPI _dataAPI;
-       
+
 
         [TestInitialize]
         public void Setup()
         {
-            _dataAPI =AbstractDataAPI.CreateAPI();
+            _dataAPI = AbstractDataAPI.CreateAPI();
             _logicAPI = AbstractLogicAPI.CreateAPI(_dataAPI);
         }
 
@@ -52,5 +57,39 @@ namespace Testy
         }
 
 
+        [TestMethod]
+        public void GenerateAndValidateFullSchema()
+        {
+            string ProjectDir = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
+            string SchemaFilePath = Path.Combine(ProjectDir, "Schema.json");
+
+            var generator = new JSchemaGenerator();
+
+            var schema = new JSchema
+            {
+                Type = JSchemaType.Object,
+                Properties =
+                {
+                    ["Plant"] = generator.Generate(typeof(Plant)),
+                    ["DiscountNotification"] = generator.Generate(typeof(DiscountNotification)),
+                    ["PlantList"] = generator.Generate(typeof(List<Plant>))
+                }
+            };
+
+            File.WriteAllText(SchemaFilePath, schema.ToString());
+
+            var loadedSchema = JSchema.Parse(File.ReadAllText(SchemaFilePath));
+            var validPlant = JObject.FromObject(new Plant(1, "Monstera", 49.99f));
+            var validDiscount = JObject.FromObject(new DiscountNotification { DiscountValue = 0.1f });
+            var validPlantList = JArray.FromObject(new List<Plant> { new Plant(1, "Monstera", 49.99f) });
+
+            bool isPlantValid = validPlant.IsValid(loadedSchema.Properties["Plant"]);
+            bool isDiscountValid = validDiscount.IsValid(loadedSchema.Properties["DiscountNotification"]);
+            bool isPlantListValid = validPlantList.IsValid(loadedSchema.Properties["PlantList"]);
+
+            Assert.IsTrue(isPlantValid, "Plant JSON nie pasuje do schematu!");
+            Assert.IsTrue(isDiscountValid, "Discount JSON nie pasuje do schematu!");
+            Assert.IsTrue(isPlantListValid, "PlantList JSON nie pasuje do schematu!");
+        }
     }
 }
