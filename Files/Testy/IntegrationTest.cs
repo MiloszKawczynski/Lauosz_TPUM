@@ -13,27 +13,14 @@ namespace Testy
         private IObserver<List<IPlant>> _observerList;
 
         [TestMethod]
-        public async Task ShouldConnectToServer()
+        public async Task ShouldConnectToServerShouldSuccessfullyPurchasePlant()
         {
             server.Start();
             try
             {
                 await service.ConnectAsync(_observerFloat, _observerList);
                 Assert.IsTrue(true);
-            }
-            catch
-            {
-                Assert.Inconclusive("Test wymaga działającego serwera WebSocket");
-            }
-            
-        }
 
-        [TestMethod]
-        public async Task ShouldSuccessfullyPurchasePlant()
-        {
-            try
-            {
-                await service.ConnectAsync(_observerFloat, _observerList);
                 await service.SendCommandAsync(1);
                 Assert.IsTrue(true);
             }
@@ -41,6 +28,7 @@ namespace Testy
             {
                 Assert.Inconclusive("Test wymaga działającego serwera WebSocket");
             }
+
         }
     }
 }
