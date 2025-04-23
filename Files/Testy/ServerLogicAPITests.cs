@@ -70,9 +70,9 @@ namespace Testy
                 Type = JSchemaType.Object,
                 Properties =
                 {
-                    ["Plant"] = generator.Generate(typeof(Plant)),
-                    ["DiscountNotification"] = generator.Generate(typeof(DiscountNotification)),
-                    ["PlantList"] = generator.Generate(typeof(List<Plant>))
+                    ["Plant"] = generator.Generate(typeof(PlantDTO)),
+                    ["DiscountNotification"] = generator.Generate(typeof(DiscountNotificationDTO)),
+                    ["PlantList"] = generator.Generate(typeof(List<PlantDTO>))
                 }
             };
 

@@ -3,6 +3,7 @@
   "properties": {
     "Plant": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "ID": {
           "type": "integer"
@@ -25,6 +26,7 @@
     },
     "DiscountNotification": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "DiscountValue": {
           "type": "number"
@@ -41,6 +43,7 @@
           "object",
           "null"
         ],
+        "additionalProperties": false,
         "properties": {
           "ID": {
             "type": "integer"
